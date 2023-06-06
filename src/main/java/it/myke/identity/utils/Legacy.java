@@ -23,11 +23,4 @@ public class Legacy {
 
 
 
-
-    public static String legacyTranslate(String string) {
-        return LegacyComponentSerializer.legacySection().serialize(translate(string));
-    }
-
-
-
 }
