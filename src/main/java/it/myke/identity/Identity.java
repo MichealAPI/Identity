@@ -39,14 +39,10 @@ public final class Identity extends JavaPlugin {
     private PostProcessCommands postProcessCommands;
     private PersonUtil personUtil;
 
-    public static net.kyori.adventure.platform.bukkit.BukkitAudiences audience;
-
 
 
     @Override
     public void onEnable() {
-
-        audience = BukkitAudiences.create(this);
 
         this.customConfigsInit = new CustomConfigsInit();
         customConfigsInit.init(this);

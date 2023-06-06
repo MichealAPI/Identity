@@ -6,6 +6,7 @@ import it.myke.identity.disk.Settings;
 import it.myke.identity.inventories.Inventories;
 import it.myke.identity.inventories.InventoryManager;
 import it.myke.identity.utils.FormatUtils;
+import it.myke.identity.utils.Legacy;
 import it.myke.identity.utils.PersonUtil;
 import it.myke.identity.utils.config.CustomConfigsInit;
 import it.myke.identity.utils.postprocess.PostProcessCommands;
@@ -16,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import static it.myke.identity.Identity.audience;
 import static it.myke.identity.inventories.Inventories.inventories;
 import static it.myke.identity.inventories.Inventories.processStarted;
 
@@ -61,24 +61,24 @@ public class NameInventoryListener implements Listener {
                 name = event.getMessage().replace(" ", "");
 
                 if(name.length() < Settings.FIRSTNAME_MIN_LENGTH) {
-                    audience.player(player).sendMessage(Lang.NAME_TOO_SHORT);
+                    player.sendMessage(Legacy.translate((Lang.NAME_TOO_SHORT)));
                     return;
                 }
 
                 if(name.length() > Settings.FIRSTNAME_MAX_LENGTH) {
-                    audience.player(player).sendMessage(Lang.FIRSTNAME_EXCEEDS_MAX_LENGTH);
+                    player.sendMessage(Legacy.translate((Lang.FIRSTNAME_EXCEEDS_MAX_LENGTH)));
                     return;
                 }
 
                 if(Settings.ALPHANUMERIC_ONLY && !FormatUtils.isAlphanumeric(name)) {
-                    audience.player(player).sendMessage(Lang.NAME_NOT_VALID);
+                    player.sendMessage(Legacy.translate((Lang.NAME_NOT_VALID)));
                     return;
                 }
 
 
                 if(!setup) {
                     customConfigsInit.saveInConfig(event.getPlayer().getUniqueId(), personUtil);
-                    audience.player(player).sendMessage(Lang.NAME_EDITED);
+                    player.sendMessage(Legacy.translate((Lang.NAME_EDITED)));
                     Bukkit.getScheduler().runTask(main, () -> event.getPlayer().closeInventory());
                     return;
                 }
@@ -91,34 +91,34 @@ public class NameInventoryListener implements Listener {
                     String[] surname_and_name = event.getMessage().split(" ");
 
                     if(surname_and_name[0].length() < Settings.FIRSTNAME_MIN_LENGTH) {
-                        audience.player(player).sendMessage(Lang.NAME_TOO_SHORT);
+                        player.sendMessage(Legacy.translate((Lang.NAME_TOO_SHORT)));
                         return;
                     }
 
                     if(surname_and_name[0].length() > Settings.FIRSTNAME_MAX_LENGTH) {
-                        audience.player(player).sendMessage(Lang.FIRSTNAME_EXCEEDS_MAX_LENGTH);
+                        player.sendMessage(Legacy.translate((Lang.FIRSTNAME_EXCEEDS_MAX_LENGTH)));
                         return;
                     }
 
                     if(surname_and_name[1].length() < Settings.LASTNAME_MIN_LENGTH) {
-                        audience.player(player).sendMessage(Lang.NAME_TOO_SHORT);
+                        player.sendMessage(Legacy.translate((Lang.NAME_TOO_SHORT)));
                         return;
                     }
 
                     if(surname_and_name[1].length() > Settings.LASTNAME_MAX_LENGTH) {
-                        audience.player(player).sendMessage(Lang.LASTNAME_EXCEEDS_MAX_LENGTH);
+                        player.sendMessage(Legacy.translate((Lang.LASTNAME_EXCEEDS_MAX_LENGTH)));
                         return;
                     }
 
                     if(Settings.ALPHANUMERIC_ONLY && !FormatUtils.isAlphanumeric(surname_and_name[0] + surname_and_name[1])) {
-                        audience.player(player).sendMessage(Lang.NAME_NOT_VALID);
-                        audience.player(player).sendMessage(Lang.NAME_NOT_VALID);
+                        player.sendMessage(Legacy.translate((Lang.NAME_NOT_VALID)));
+                        player.sendMessage(Legacy.translate((Lang.NAME_NOT_VALID)));
                         return;
                     }
 
                     if(!setup) {
                         customConfigsInit.saveInConfig(event.getPlayer().getUniqueId(), personUtil);
-                        audience.player(player).sendMessage(Lang.NAME_EDITED);
+                        player.sendMessage(Legacy.translate((Lang.NAME_EDITED)));
                         Bukkit.getScheduler().runTask(main, () -> event.getPlayer().closeInventory());
                         event.getPlayer().closeInventory();
                         return;
@@ -128,7 +128,7 @@ public class NameInventoryListener implements Listener {
                     Bukkit.getScheduler().runTask(main, () -> new InventoryManager().openNextInventory(event.getPlayer(), main, personUtil, inventoriesUtil, postProcessCommands, customConfigsInit, setup));
                     processStarted.remove(event.getPlayer().getUniqueId());
                 } else {
-                    audience.player(player).sendMessage(Lang.LASTNAME_REQUIRED);
+                    player.sendMessage(Legacy.translate((Lang.LASTNAME_REQUIRED)));
                 }
             }
 

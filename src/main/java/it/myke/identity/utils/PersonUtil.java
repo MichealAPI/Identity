@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static it.myke.identity.Identity.audience;
-
 public class PersonUtil {
     private final Map<UUID, Person> personHashMap = new HashMap<>();
 
@@ -73,7 +71,7 @@ public class PersonUtil {
             new InventoryManager().openNextInventory(player, main, this, inventoryUtils, postProcessCommands, customConfigsInit, true);
             return true;
         } else if(cmd) {
-            audience.player(player).sendMessage(Lang.ALREADY_HAVE_IDENTITY);
+            player.sendMessage(Legacy.translate(Lang.ALREADY_HAVE_IDENTITY));
             return false;
         }
         return false;

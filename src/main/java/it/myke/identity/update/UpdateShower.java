@@ -7,6 +7,7 @@ import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import it.myke.identity.Identity;
 import it.myke.identity.utils.CustomHeads;
+import it.myke.identity.utils.Legacy;
 import lombok.Getter;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -16,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static it.myke.identity.Identity.audience;
 import static it.myke.identity.inventories.Inventories.inventories;
 
 public class UpdateShower {
@@ -73,7 +73,7 @@ public class UpdateShower {
             if(!identity.getConfig().getBoolean("updates.menu-shown")) {
                 identity.getConfig().set("updates.menu-shown", true);
                 identity.saveConfig();
-                audience.sender(close.getPlayer()).sendMessage(MiniMessage.miniMessage().deserialize("<color:#17C600>Thank you for using Identity! Next Updates will be shown to you only if you want it by command, <gray>/identity showupdates<color:#17C600>."));
+                close.getPlayer().sendMessage(Legacy.translate(MiniMessage.miniMessage().deserialize("<color:#17C600>Thank you for using Identity! Next Updates will be shown to you only if you want it by command, <gray>/identity showupdates<color:#17C600>.")));
             }
             return true;
         });
