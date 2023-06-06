@@ -29,20 +29,20 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.kyori.adventure.title.Title;
+import net.kyori.adventure.translation.Translator;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static it.myke.identity.Identity.audience;
 import static it.myke.identity.utils.furnace.FurnaceManager.*;
 
 public class Inventories extends AbstractInventories {
@@ -115,14 +115,9 @@ public class Inventories extends AbstractInventories {
     private boolean getNameListener(Player player, InventoryGui inventoryGui, boolean setup) {
         processStarted.put(player.getUniqueId(), setup);
         inventoryGui.close();
-        audience.player(player).sendMessage(Lang.INSERT_NAME);
+        player.sendMessage(Legacy.translate(Lang.INSERT_NAME));
         if(Settings.NAME_TITLEBAR_ENABLED) {
-            Title title = Title.title(
-                    Lang.INSERT_NAME_TITLE,
-                    Lang.INSERT_NAME_SUBTITLE,
-                    Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(3), Duration.ofSeconds(1))
-            );
-            audience.player(player).showTitle(title);
+            player.sendTitle(Legacy.translate(Lang.INSERT_NAME_TITLE), Legacy.translate(Lang.INSERT_NAME_SUBTITLE));
         }
         return true;
     }
@@ -187,11 +182,11 @@ public class Inventories extends AbstractInventories {
                 if(table.containsRow(actionElement.getAction())) {
                     Table.Cell<Action, String, Component> genderCell = table.cellSet().stream().filter(cell -> cell.getRowKey() == actionElement.getAction()).findFirst().get();
                     personUtil.getPerson(click.getWhoClicked().getUniqueId()).setGender(genderCell.getColumnKey());
-                    audience.player((Player) click.getWhoClicked()).sendMessage (genderCell.getValue());
+                    ((Player) click.getWhoClicked()).sendMessage(Legacy.translate(genderCell.getValue()));
                 }
                 if (!setup) {
                     customConfigsInit.saveInConfig(click.getWhoClicked().getUniqueId(), personUtil);
-                    audience.player((Player) click.getWhoClicked()).sendMessage (Lang.GENDER_EDITED);
+                    ((Player) click.getWhoClicked()).sendMessage(Legacy.translate(Lang.GENDER_EDITED));
                     click.getWhoClicked().closeInventory();
                     return true;
                 }
@@ -237,11 +232,11 @@ public class Inventories extends AbstractInventories {
             if (actionElement.getAction() == Action.CONFIRM_AGE) {
                 inventoryGui.addElement(new DynamicGuiElement(actionElement.getCharPos(), (viewer) -> new StaticGuiElement(actionElement.getCharPos(), actionElement.getStack(), click -> {
                     personUtil.getPerson(click.getWhoClicked().getUniqueId()).setAge(actualAge.get());
-                    audience.player((Player) click.getWhoClicked()).sendMessage (Lang.AGE_CONFIRMED);
+                    ((Player) click.getWhoClicked()).sendMessage(Legacy.translate(Lang.AGE_CONFIRMED));
                     new InventoryManager().openNextInventory((Player) click.getWhoClicked(), plugin, personUtil, this, postProcessCommands, customConfigsInit, setup);
                     if(!setup) {
                         customConfigsInit.saveInConfig(click.getWhoClicked().getUniqueId(), personUtil);
-                        audience.player((Player) click.getWhoClicked()).sendMessage (Lang.AGE_EDITED);
+                        ((Player) click.getWhoClicked()).sendMessage(Legacy.translate(Lang.AGE_EDITED));
                         click.getWhoClicked().closeInventory();
                     }
                     return true;
@@ -256,7 +251,7 @@ public class Inventories extends AbstractInventories {
                             if (!(actualAge.get() - 1 < minAge)) {
                                 actualAge.getAndDecrement();
                             } else {
-                                audience.player((Player) click.getWhoClicked()).sendActionBar(Lang.MIN_AGE_REACHED);
+                                ((Player) click.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Legacy.translate(Lang.MIN_AGE_REACHED)));
                                 XSound.play((Player) click.getWhoClicked(), "BLOCK_ANVIL_USE");
                             }
                             click.getGui().draw();
@@ -265,7 +260,7 @@ public class Inventories extends AbstractInventories {
                             if (!(actualAge.get() + 1 > maxAge)) {
                                 actualAge.getAndIncrement();
                             } else {
-                                audience.player((Player) click.getWhoClicked()).sendActionBar(Lang.MAX_AGE_REACHED);
+                                ((Player) click.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Legacy.translate((Lang.MAX_AGE_REACHED))));
                                 XSound.play((Player) click.getWhoClicked(), "BLOCK_ANVIL_USE");
                             }
                             click.getGui().draw();
@@ -324,7 +319,7 @@ public class Inventories extends AbstractInventories {
                             long cooldownMs = 200;
                             cooldown.put(player.getUniqueId(), now + cooldownMs);
                         } else {
-                            audience.player((Player) click.getWhoClicked()).sendActionBar(Lang.MIN_AGE_REACHED);
+                            ((Player) click.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Legacy.translate(Lang.MIN_AGE_REACHED)));
                             XSound.play((Player) click.getWhoClicked(), "BLOCK_ANVIL_USE");
                         }
                     }
@@ -342,7 +337,7 @@ public class Inventories extends AbstractInventories {
                             long cooldownMs = 200;
                             cooldown.put(player.getUniqueId(), now + cooldownMs);
                         } else {
-                            audience.player((Player) click.getWhoClicked()).sendActionBar(Lang.MAX_AGE_REACHED);
+                            ((Player) click.getWhoClicked()).spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Legacy.translate(Lang.MAX_AGE_REACHED)));
                             XSound.play((Player) click.getWhoClicked(), "BLOCK_ANVIL_USE");
                         }
                     }
@@ -362,7 +357,7 @@ public class Inventories extends AbstractInventories {
 
                         if (!setup) {
                             customConfigsInit.saveInConfig(player.getUniqueId(), personUtil);
-                            audience.player(player).sendMessage(Lang.AGE_EDITED);
+                            player.sendMessage(Legacy.translate(Lang.AGE_EDITED));
                             player.closeInventory();
                             return;
                         }
@@ -388,13 +383,13 @@ public class Inventories extends AbstractInventories {
                 .onComplete((player, text) -> {                                    //called when the inventory output slot is clicked
                     if(Settings.LASTNAME_REQUIRED) {
                         if(!text.contains(" ")) {
-                            audience.player(player).sendMessage (Lang.LASTNAME_REQUIRED);
+                            player.sendMessage(Legacy.translate(Lang.LASTNAME_REQUIRED));
                             return AnvilGUI.Response.text(LegacyComponentSerializer.legacySection().serialize(Lang.LASTNAME_REQUIRED));
                         } else {
                             String[] textSplit = text.trim().replaceAll(" +", " ").split(" ");
                             personUtil.getPerson(player.getUniqueId()).setName(FormatUtils.firstUppercase(textSplit[0]) + " " + FormatUtils.firstUppercase(textSplit[1]));
-                            audience.player(player).sendMessage (Lang.NAME_CONFIRMED.replaceText(TextReplacementConfig.builder()
-                                    .matchLiteral("%name%").replacement(FormatUtils.firstUppercase(textSplit[0]) + " " + FormatUtils.firstUppercase(textSplit[1])).build()));
+                            player.sendMessage(Legacy.translate(Lang.NAME_CONFIRMED.replaceText(TextReplacementConfig.builder()
+                                    .matchLiteral("%name%").replacement(FormatUtils.firstUppercase(textSplit[0]) + " " + FormatUtils.firstUppercase(textSplit[1])).build())));
                             return AnvilGUI.Response.close();
                         }
                     } else {
@@ -409,8 +404,8 @@ public class Inventories extends AbstractInventories {
 
 
                         personUtil.getPerson(player.getUniqueId()).setName(FormatUtils.firstUppercase(finalText));
-                        audience.player(player).sendMessage (Lang.NAME_CONFIRMED.replaceText(TextReplacementConfig.builder()
-                                .matchLiteral("%name%").replacement(FormatUtils.firstUppercase(finalText)).build()));
+                        player.sendMessage(Legacy.translate(Lang.NAME_CONFIRMED.replaceText(TextReplacementConfig.builder()
+                                .matchLiteral("%name%").replacement(FormatUtils.firstUppercase(finalText)).build())));
 
                         return AnvilGUI.Response.close();
                     }
@@ -420,7 +415,7 @@ public class Inventories extends AbstractInventories {
                         InventoryManager inventoryManager = new InventoryManager();
                         if(!setup) {
                             customConfigsInit.saveInConfig(player.getUniqueId(), personUtil);
-                            audience.player(player).sendMessage (Lang.NAME_EDITED);
+                            player.sendMessage(Legacy.translate(Lang.NAME_EDITED));
                             player.closeInventory();
                             return;
                         }
