@@ -1,6 +1,6 @@
 name: Identity
 version: '${project.version}'
-main: it.myke.identity.Identity
+main: it.mikeslab.identity.Identity
 api-version: 1.16
 authors: [ MikesLab ]
 description: Identity made by MikesLab group.

@@ -184,14 +184,14 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.5.3-SNAPSHOT</version>
+            <version>1.7.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
