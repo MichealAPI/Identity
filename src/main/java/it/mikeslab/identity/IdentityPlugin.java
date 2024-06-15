@@ -14,6 +14,8 @@ import it.mikeslab.commons.api.inventory.config.GuiConfig;
 import it.mikeslab.commons.api.inventory.event.GuiListener;
 import it.mikeslab.commons.api.inventory.factory.GuiFactoryImpl;
 import it.mikeslab.commons.api.inventory.util.action.ActionHandler;
+import it.mikeslab.commons.api.inventory.util.action.ActionHandlerImpl;
+import it.mikeslab.commons.api.inventory.util.action.ActionRegistrar;
 import it.mikeslab.commons.api.logger.LoggerUtil;
 import it.mikeslab.identity.command.IdentityCommand;
 import it.mikeslab.identity.config.ConfigKey;
@@ -24,6 +26,7 @@ import it.mikeslab.identity.handler.AntiSpam;
 import it.mikeslab.identity.handler.AntiSpamImpl;
 import it.mikeslab.identity.handler.IdentityCacheHandler;
 import it.mikeslab.identity.handler.SetupCacheHandler;
+import it.mikeslab.identity.inventory.action.ActionRegistrarImpl;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
 import it.mikeslab.identity.papi.IdentityExpansion;
 import it.mikeslab.identity.pojo.Identity;
@@ -149,6 +152,8 @@ public final class IdentityPlugin extends JavaPlugin {
 
         this.cachedGuiConfig = new HashMap<>();
 
+        this.initActions();
+
         GuiFactoryImpl guiFactoryImpl = new GuiFactoryImpl(this);
         this.guiFactory = guiFactoryImpl;
         this.guiListener = new GuiListener(guiFactoryImpl, this);
@@ -165,6 +170,18 @@ public final class IdentityPlugin extends JavaPlugin {
         );
 
         this.guiConfigRegistrar.register();
+
+        this.guiFactory.setActionHandler(actionHandler);
+
+    }
+
+    private void initActions() {
+
+        ActionRegistrar actionRegistrar = new ActionRegistrarImpl(this);
+
+        this.actionHandler = new ActionHandlerImpl(
+                actionRegistrar.loadActions()
+        );
 
     }
 

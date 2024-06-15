@@ -7,6 +7,7 @@ import it.mikeslab.commons.api.inventory.config.GuiConfigImpl;
 import it.mikeslab.commons.api.inventory.event.GuiInteractEvent;
 import it.mikeslab.commons.api.inventory.pojo.GuiDetails;
 import it.mikeslab.commons.api.inventory.pojo.GuiElement;
+import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
 import it.mikeslab.commons.api.inventory.util.PageSystem;
 import it.mikeslab.commons.api.logger.LoggerUtil;
 import it.mikeslab.identity.IdentityPlugin;
@@ -63,6 +64,7 @@ public class SelectorMenu implements CustomInventory {
 
         this.generate();
 
+        this.injectActions();
 
     }
 
@@ -113,42 +115,8 @@ public class SelectorMenu implements CustomInventory {
     }
 
     @Override
-    public Optional<Map<String, Consumer<GuiInteractEvent>>> getConsumers() {
-
-        Map<String, Consumer<GuiInteractEvent>> result = new HashMap<>();
-
-        result.put(ConsumerFilter.ANY.getFilter(), event -> {
-
-            GuiElement clickedElement = event.getClickedElement();
-            String internalValue = clickedElement.getInternalValue();
-
-            if(internalValue == null) return;
-
-            if(internalValue.startsWith("select:")) {
-
-                String[] split = internalValue.split(":");
-                String value = split[1];
-
-                UUID uuid = event.getWhoClicked().getUniqueId();
-
-                this.handleSelection(uuid, value);
-
-                Bukkit.getScheduler().runTask(instance, () -> {
-
-                    CustomInventory fallbackInventory = instance.getGuiConfigRegistrar()
-                            .getPlayerInventories()
-                            .get(uuid)
-                            .get(instance.getGuiConfigRegistrar().getFallbackGuiIdentifier());
-
-                    fallbackInventory.show(event.getWhoClicked());
-
-                });
-
-            }
-
-        });
-
-        return Optional.of(result);
+    public Optional<Map<String, Consumer<GuiInteractEvent>>> getConsumers() { // These consumers are related to the internal value of a GuiElement, not the actions
+        return Optional.empty();
     }
 
     @Override
@@ -187,6 +155,37 @@ public class SelectorMenu implements CustomInventory {
         this.setCompleted(true);
 
     }
+
+
+    private void injectActions() {
+
+        instance.getActionHandler().injectAction(
+                id,
+                "select",
+                new GuiAction((event, args) -> {
+
+                            Player player = event.getWhoClicked();
+
+                            Bukkit.getScheduler().runTask(instance, () -> {
+
+                                this.handleSelection(player.getUniqueId(), args);
+
+                                CustomInventory fallbackInventory = instance.getGuiConfigRegistrar()
+                                        .getPlayerInventories()
+                                        .get(player.getUniqueId())
+                                        .get(instance.getGuiConfigRegistrar().getFallbackGuiIdentifier());
+
+                                fallbackInventory.show(player);
+
+                            });
+
+
+                        })
+        );
+
+    }
+
+
 
 
 }
