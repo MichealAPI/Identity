@@ -47,18 +47,8 @@ public class InventoryMap implements Map<UUID, Map<String, CustomInventory>> {
     public Map<String, CustomInventory> get(Object key) {
 
         if (!map.containsKey(key)) {
-
-            UUID uuid = (UUID) key;
-
-            Map<String, CustomInventory> inventoryMap = new HashMap<>(
-                    instance.getGuiConfigRegistrar().getGuis() // Recreates a CustomInventory instance for each player
-            );
-
-            map.put(uuid, inventoryMap);
-
-            return inventoryMap;
+            return this.load(key);
         }
-
 
         return map.get(key);
     }
@@ -101,4 +91,21 @@ public class InventoryMap implements Map<UUID, Map<String, CustomInventory>> {
     public Set<Entry<UUID, Map<String, CustomInventory>>> entrySet() {
         return map.entrySet();
     }
+
+    /**
+     * Load the setup inventories for a player
+     * @param key The player UUID
+     */
+    public Map<String, CustomInventory> load(Object key) {
+        UUID uuid = (UUID) key;
+
+        Map<String, CustomInventory> inventoryMap = new HashMap<>(
+                instance.getGuiConfigRegistrar().getGuis() // Recreates a CustomInventory instance for each player
+        );
+
+        map.put(uuid, inventoryMap);
+
+        return inventoryMap;
+    }
+
 }

@@ -13,6 +13,7 @@ import it.mikeslab.commons.api.inventory.GuiFactory;
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
 import it.mikeslab.commons.api.inventory.event.GuiListener;
 import it.mikeslab.commons.api.inventory.factory.GuiFactoryImpl;
+import it.mikeslab.commons.api.inventory.util.action.ActionHandler;
 import it.mikeslab.commons.api.logger.LoggerUtil;
 import it.mikeslab.identity.command.IdentityCommand;
 import it.mikeslab.identity.config.ConfigKey;
@@ -63,6 +64,8 @@ public final class IdentityPlugin extends JavaPlugin {
     private GuiConfigRegistrar guiConfigRegistrar;
 
     private Map<String, GuiConfig> cachedGuiConfig;
+
+    private ActionHandler actionHandler;
 
     @Override
     public void onEnable() {
