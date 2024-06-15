@@ -1,0 +1,44 @@
+title: "Roblox me forever"
+layout:
+  - "aaaaaaaaa"
+  - "aaegggfaa"
+  - "aaaaaaaaa"
+type: CHEST
+size: 27
+elements:
+  'a':
+    displayName: " "
+    lore: []
+    material: GRAY_STAINED_GLASS_PANE
+  "g":
+    is-group-element: true
+    displayName: "<green>1"
+    internalValue: select:Primo Elemento
+    material: IRON_SWORD
+    glowing: true
+  "g-1":
+    is-group-element: true
+    displayName: "<green>2"
+    internalValue: select:Secondo Elemento
+    material: GOLDEN_SWORD
+    glowing: true
+  "g-2":
+    is-group-element: true
+    displayName: "<green>3"
+    internalValue: select:Terzo Elemento
+    material: WOODEN_SWORD
+    glowing: true 
+  "g-3":
+    is-group-element: true
+    displayName: "<green>4"
+    internalValue: select:Quarto Elemento
+    material: DIAMOND_SWORD
+    glowing: false
+  'e':
+    displayName: "<red>PREVIOUS PAGE"
+    internalValue: PREVIOUS_PAGE_G
+    material: REDSTONE
+  'f':
+    displayName: "<green>NEXT PAGE"
+    internalValue: NEXT_PAGE_G
+    material: ARROW    

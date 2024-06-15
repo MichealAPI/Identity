@@ -1,0 +1,14 @@
+title: "Roblox me forever"
+layout:
+  - "aaaaaaaaa"
+  - "aaaagaaaa"
+  - "aaaaaaaaa"
+type: CHEST
+size: 27
+elements:
+  "g":
+    is-group-element: true
+    displayName: "<green>Robux?"
+    internalValue: open:roblox
+    material: IRON_BLOCK
+    glowing: false

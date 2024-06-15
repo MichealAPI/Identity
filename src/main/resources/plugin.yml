@@ -1,0 +1,12 @@
+name: WidenIdentity
+version: '${project.version}'
+main: it.mikeslab.identity.IdentityPlugin
+api-version: '1.14'
+depend: [LabCommons]
+softdepend: [PlaceholderAPI]
+
+author: MikesLab
+description: ''
+prefix: 'Identity'
+
+website: https://mikeslab.it

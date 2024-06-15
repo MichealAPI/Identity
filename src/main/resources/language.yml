@@ -1,0 +1,20 @@
+enter-your-first-name: Enter your first name
+enter-your-full-name: Enter your full name
+
+kick-message-reset-identity: You have reset your identity
+
+female-gender: Female
+male-gender: Male
+other-gender: Other
+
+identity-saved: Your identity has been saved
+
+missing-identity-data: You are missing identity data. Please complete the form.
+
+identity-reset-for: "Identity reset for <player>"
+identity-not-found: "Identity not found for <player>"
+
+anvil:
+  invalid-name: Invalid Name
+  invalid-last-name: Invalid Surname
+  name-placeholder: Insert a name
