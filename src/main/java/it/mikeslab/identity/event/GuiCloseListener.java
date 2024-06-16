@@ -64,9 +64,7 @@ public class GuiCloseListener implements Listener {
 
                 // do this if it is not opening a custom gui within 2 (//todo 1?) milliseconds
 
-                if (!registrar.isMandatory(guiKey)) return;
-
-                if (registrar.isCompleted(guiKey, playerUUID)) return;
+                if (registrar.isMandatory(guiKey) && registrar.isCompleted(guiKey, playerUUID)) return;
 
                 Bukkit.getScheduler().runTask(
                         instance,

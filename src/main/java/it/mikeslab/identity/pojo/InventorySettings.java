@@ -3,9 +3,10 @@ package it.mikeslab.identity.pojo;
 import it.mikeslab.identity.inventory.InventoryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 public class InventorySettings {

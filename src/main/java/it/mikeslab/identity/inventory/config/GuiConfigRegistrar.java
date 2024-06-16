@@ -4,8 +4,10 @@ import it.mikeslab.commons.api.logger.LoggerUtil;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.CustomInventory;
 import it.mikeslab.identity.inventory.InventoryType;
+import it.mikeslab.identity.inventory.ValueMenuContext;
 import it.mikeslab.identity.inventory.impl.MainMenu;
 import it.mikeslab.identity.inventory.impl.SelectorMenu;
+import it.mikeslab.identity.inventory.impl.ValueMenu;
 import it.mikeslab.identity.pojo.InventorySettings;
 import it.mikeslab.identity.util.InventoryMap;
 import lombok.Getter;
@@ -32,6 +34,9 @@ public class GuiConfigRegistrar {
 
     @Getter
     private final List<String> mandatoryInventories = new ArrayList<>();
+
+    @Getter
+    private double min, max, baseValue;
 
 
     public GuiConfigRegistrar(IdentityPlugin instance, ConfigurationSection section) {
@@ -101,6 +106,12 @@ public class GuiConfigRegistrar {
                 continue;
             }
 
+            if(type == InventoryType.VALUE) {
+                min = configSection.getDouble(ConfigField.MIN.getField, Double.MIN_VALUE);
+                max = configSection.getDouble(ConfigField.MAX.getField, Double.MAX_VALUE);
+                baseValue = configSection.getDouble(ConfigField.BASE.getField, 0);
+            }
+
             CustomInventory customInventory = createInventory(
                     type,
                     configSection.getString(ConfigField.PATH.getField),
@@ -163,30 +174,18 @@ public class GuiConfigRegistrar {
         }
 
         // Create the gui config
+        InventorySettings settings = new InventorySettings(
+                id,
+                file.getName().replace(".yml", ""),
+                true,
+                type
+        );
 
         switch (type) {
 
-            case SELECTOR:
-
-                return new SelectorMenu(
-                        instance,
-                        new InventorySettings(
-                                id,
-                                file.getName().replace(".yml", ""),
-                                true,
-                                type
-                        ));
-            case MAIN:
-
-                return new MainMenu(
-                        instance,
-                        new InventorySettings( // todo this should be extracted, it is not just because of the close on fail personalization, to be fixed.
-                                id,
-                                file.getName().replace(".yml", ""),
-                                true,
-                                type
-                        )
-                );
+            case SELECTOR: return new SelectorMenu(instance, settings);
+            case MAIN: return new MainMenu(instance, settings);
+            case VALUE: return new ValueMenu(instance, settings, new ValueMenuContext(baseValue, max, min));
 
             // break;
 
@@ -245,6 +244,9 @@ public class GuiConfigRegistrar {
 
         TYPE("type"),
         PATH("path"),
+        MIN("min"),
+        MAX("max"),
+        BASE("base"),
         MANDATORY("mandatory");
 
         private final String getField;

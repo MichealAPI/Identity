@@ -14,7 +14,7 @@ public class IdentityExpansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "widenidentity";
+        return "identity";
     }
 
     @Override

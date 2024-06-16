@@ -73,6 +73,10 @@ public class PlayerListener implements Listener {
             instance.getIdentityDatabase().upsert(identity);
             instance.getSetupCacheHandler().remove(playerUUID);
 
+            // todo evaluate if this is necessary, removing on quit
+            instance.getGuiConfigRegistrar()
+                    .getPlayerInventories()
+                    .remove(playerUUID);
         }
 
     }
