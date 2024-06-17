@@ -12,6 +12,7 @@ import lombok.Data;
 import java.io.File;
 import java.util.Optional;
 
+// TODO Extract to LabCommons
 @Data
 public abstract class GuiTemplate implements CustomInventory {
 
@@ -27,7 +28,10 @@ public abstract class GuiTemplate implements CustomInventory {
      * Initialize the gui
      */
     private void generate() {
-        String fileName = "inventories" + File.separator + this.getFileName() + ".yml";
+
+        File configFile = new File(getInstance().getDataFolder(), this.getRelativePath().toString());
+        String fileName = configFile.getName();
+
         GuiConfig guiConfig;
 
         // Check if the guiConfig is cached, this
@@ -39,7 +43,7 @@ public abstract class GuiTemplate implements CustomInventory {
         } else {
 
             guiConfig = new GuiConfigImpl(this.getInstance());
-            guiConfig.loadConfig(fileName, true);
+            guiConfig.loadConfig(this.getRelativePath(), true);
 
             this.getInstance().getCachedGuiConfig().put(fileName, guiConfig);
         }

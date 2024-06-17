@@ -5,17 +5,20 @@ import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.CustomInventory;
 import it.mikeslab.identity.inventory.InventoryType;
 import it.mikeslab.identity.inventory.ValueMenuContext;
+import it.mikeslab.identity.inventory.impl.InputMenu;
 import it.mikeslab.identity.inventory.impl.MainMenu;
 import it.mikeslab.identity.inventory.impl.SelectorMenu;
 import it.mikeslab.identity.inventory.impl.ValueMenu;
 import it.mikeslab.identity.pojo.InventorySettings;
 import it.mikeslab.identity.util.InventoryMap;
+import it.mikeslab.identity.util.inventory.input.InputMenuLoader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -38,12 +41,17 @@ public class GuiConfigRegistrar {
     @Getter
     private double min, max, baseValue;
 
+    @Getter
+    private final InputMenuLoader inputMenuLoader;
+
 
     public GuiConfigRegistrar(IdentityPlugin instance, ConfigurationSection section) {
         this.instance = instance;
         this.section = section;
 
         this.playerInventories = new InventoryMap(instance);
+
+        this.inputMenuLoader = new InputMenuLoader(instance);
     }
 
     public Map<String, CustomInventory> getGuis() {
@@ -69,7 +77,7 @@ public class GuiConfigRegistrar {
         return guis;
     }
 
-
+    // todo too complex implementation
     public void register() {
 
         for(String key : section.getKeys(false)) {
@@ -159,24 +167,30 @@ public class GuiConfigRegistrar {
                 .replace("/", File.separator);
 
         // Get the file
-        File file = new File(instance.getDataFolder(), path); // todo add default sub-path /inventories
+        File configFile = new File(instance.getDataFolder(), path); // todo add default sub-path /inventories
 
         // Check if the file exists
-        if(!file.exists()) {
+        if(!configFile.exists()) {
             LoggerUtil
                     .log(
                             IdentityPlugin.PLUGIN_NAME,
                             Level.WARNING,
                             LoggerUtil.LogSource.CONFIG,
-                            "File at '" + file.getAbsolutePath() + "' does not exist"
+                            "File at '" + configFile.getAbsolutePath() + "' does not exist"
                     );
             return null;
         }
 
+        Path fullPath = configFile.toPath();
+        Path rootPath = instance.getDataFolder().toPath();
+
+        // Get relative path
+        Path relativePath = rootPath.relativize(fullPath);
+
         // Create the gui config
         InventorySettings settings = new InventorySettings(
                 id,
-                file.getName().replace(".yml", ""),
+                relativePath,
                 true,
                 type
         );
@@ -186,6 +200,7 @@ public class GuiConfigRegistrar {
             case SELECTOR: return new SelectorMenu(instance, settings);
             case MAIN: return new MainMenu(instance, settings);
             case VALUE: return new ValueMenu(instance, settings, new ValueMenuContext(baseValue, max, min));
+            case INPUT: return new InputMenu(instance, settings);
 
             // break;
 

@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 public class InventoryContext {
 
     private Optional<Map<String, Consumer<GuiInteractEvent>>> consumers;
-    private SetupCacheHandler setupCacheHandler;
     private GuiDetails defaultGuiDetails;
 
 }

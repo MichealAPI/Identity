@@ -24,5 +24,4 @@ public class CustomInventoryContext {
         this.settings = settings;
     }
 
-
 }

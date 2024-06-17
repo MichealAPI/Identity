@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -60,7 +61,7 @@ public class GuiCloseListener implements Listener {
             }
 
 
-            checkOpeningNewCustomGui(player, (unused) -> {
+            checkOpeningNewCustomGui(player, () -> {
 
                 // do this if it is not opening a custom gui within 2 (//todo 1?) milliseconds
 
@@ -106,7 +107,7 @@ public class GuiCloseListener implements Listener {
 
             Player player = (Player) event.getEvent().getPlayer();
 
-            checkOpeningNewCustomGui(player, (unused) -> {
+            checkOpeningNewCustomGui(player, () -> {
                 Bukkit.getScheduler().runTask(
                         instance,
                         () -> fallbackGui.show(player)
@@ -119,14 +120,19 @@ public class GuiCloseListener implements Listener {
         }
     }
 
-    void checkOpeningNewCustomGui(Player player, Consumer<Void> notCustomGuiConsumer) {
+    void checkOpeningNewCustomGui(Player player, Runnable notCustomGuiRunnable) {
 
         Bukkit.getScheduler().runTaskLater(
                 instance,
                 () -> {
 
-                    if(!(player.getOpenInventory().getTopInventory().getHolder() instanceof CustomGui))
-                        notCustomGuiConsumer.accept(null);
+                    Inventory topInventory = player.getOpenInventory().getTopInventory();
+
+                    boolean isCustomGui = topInventory.getHolder() instanceof CustomGui;
+                    boolean isAnvil = topInventory.getType() == org.bukkit.event.inventory.InventoryType.ANVIL;
+
+                    if(!isAnvil && !isCustomGui)
+                        notCustomGuiRunnable.run();
 
 
                 }, 1L);

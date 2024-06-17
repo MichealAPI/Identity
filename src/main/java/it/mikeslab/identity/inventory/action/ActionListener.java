@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import java.util.AbstractMap;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
@@ -38,11 +37,11 @@ public interface ActionListener extends CustomInventory {
      * @param action the action to inject
      * @param condition the condition to check before executing the action
      */
-    default void injectAction(String prefix, GuiAction action, Predicate<Void> condition) {
+    default void injectAction(String prefix, GuiAction action, Supplier<Boolean> condition) {
 
          GuiAction mergedAction = new GuiAction((event, args) -> {
 
-             if(condition.test(null)) {
+             if(condition.get()) {
                  action.getAction().accept(event, args);
              }
 
@@ -106,7 +105,11 @@ public interface ActionListener extends CustomInventory {
         });
     }
 
-    private void openFallbackGui(Player player) {
+    /**
+     * Opens the fallback gui
+     * @param player the player to open the gui for
+     */
+    default void openFallbackGui(Player player) {
         CustomInventory fallbackInventory = this.getInstance().getGuiConfigRegistrar()
                 .getPlayerInventories()
                 .get(player.getUniqueId())

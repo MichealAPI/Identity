@@ -7,6 +7,7 @@ import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.pojo.InventorySettings;
 import org.bukkit.entity.Player;
 
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -89,8 +90,8 @@ public interface CustomInventory {
      * Get the file name of the gui
      * @return The file name of the gui
      */
-    default String getFileName() {
-        return this.getCustomContext().getSettings().getFileName();
+    default Path getRelativePath() {
+        return this.getCustomContext().getSettings().getRelativePath();
     }
 
     /**

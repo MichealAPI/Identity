@@ -110,8 +110,8 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
      * Handle the selection of the value
      * @return The action listener
      */
-    private Predicate<Void> isValueInRange() {
-        return (v) -> this.getValueSupplier().get() >= this.min && this.getValueSupplier().get() <= this.max;
+    private Supplier<Boolean> isValueInRange() {
+        return () -> this.getValueSupplier().get() >= this.min && this.getValueSupplier().get() <= this.max;
     }
 
     private Supplier<Double> getValueSupplier() {
