@@ -2,17 +2,21 @@ package it.mikeslab.identity.inventory.impl;
 
 import it.mikeslab.commons.api.inventory.event.GuiInteractEvent;
 import it.mikeslab.identity.IdentityPlugin;
+import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.CustomInventoryContext;
 import it.mikeslab.identity.inventory.action.ActionListener;
+import it.mikeslab.identity.pojo.Condition;
 import it.mikeslab.identity.pojo.InventorySettings;
 import it.mikeslab.identity.util.inventory.input.InputMenuContext;
 import it.mikeslab.identity.util.inventory.input.InputMenuLoader;
 import lombok.Data;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Data
 public class InputMenu implements ActionListener {
@@ -57,7 +61,7 @@ public class InputMenu implements ActionListener {
 
                     String text = stateSnapshot.getText();
 
-                    boolean isInputValid = isValid(text, context);
+                    boolean isInputValid = isValid(text, context); // todo convert
                     if(isInputValid) {
 
                         // Saves to identity
@@ -95,36 +99,54 @@ public class InputMenu implements ActionListener {
                 context.getClickableElement()
         );
 
-        this.handleSelection(Optional.of(() -> input), true)
+        Supplier<Condition> conditionSupplier = () -> isValid(input, context);
+        this.handleSelection(Optional.of(() -> input), true, Optional.of(conditionSupplier))
                 .getAction()
                 .accept(event, input);
 
     }
 
 
-    boolean isValid(String value, InputMenuContext context) {
+    private Condition isValid(String value, InputMenuContext context) {
 
         boolean result = true;
+        String errorMessage = null;
 
-        if(context.getMaxLength() != -1) {
-            result = value.length() <= context.getMaxLength();
+        if(context.getMaxLength() != -1 && value.length() > context.getMaxLength()) {
+            result = false;
+            errorMessage = instance.getLanguage().getSerializedString(
+                    LanguageKey.INPUT_TOO_LONG,
+                    Placeholder.unparsed("max", context.getMaxLength() + "")
+            );
         }
 
-        if(context.getMinLength() != -1) {
-            result = value.length() >= context.getMinLength();
+        if(context.getMinLength() != -1 && value.length() < context.getMinLength()) {
+            result = false;
+            errorMessage = instance.getLanguage().getSerializedString(
+                    LanguageKey.INPUT_TOO_SHORT,
+                    Placeholder.unparsed("min", context.getMinLength() + "")
+            );
         }
 
-        if(context.getMinWords() != -1) {
-            result = value.split(" ").length >= context.getMinWords();
+        if(context.getMinWords() != -1 && value.split(" ").length < context.getMinWords()) {
+            result = false;
+            errorMessage = instance.getLanguage().getSerializedString(
+                    LanguageKey.INPUT_TOO_FEW_WORDS,
+                    Placeholder.unparsed("min", context.getMinWords() + "")
+            );
         }
 
-        if(context.getMaxWords() != -1) {
-            result = value.split(" ").length <= context.getMaxWords();
+        if(context.getMaxWords() != -1 && value.split(" ").length > context.getMaxWords()) {
+            result = false;
+            errorMessage = instance.getLanguage().getSerializedString(
+                    LanguageKey.INPUT_TOO_MANY_WORDS,
+                    Placeholder.unparsed("max", context.getMaxWords() + "")
+            );
         }
 
         // todo spam flags
 
-        return result;
+        return new Condition(result, Optional.ofNullable(errorMessage));
     }
 
 

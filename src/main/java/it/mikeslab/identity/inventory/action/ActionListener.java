@@ -4,6 +4,7 @@ import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
 import it.mikeslab.commons.api.logger.LoggerUtil;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.CustomInventory;
+import it.mikeslab.identity.pojo.Condition;
 import it.mikeslab.identity.pojo.Identity;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -56,9 +57,22 @@ public interface ActionListener extends CustomInventory {
      * @param value the value to set, if present. Defaults to args
      * @param openFallback whether to open the fallback gui after the selection
      */
-    default GuiAction handleSelection(Optional<Supplier<String>> value, boolean openFallback) {
+    default GuiAction handleSelection(Optional<Supplier<String>> value, boolean openFallback, Optional<Supplier<Condition>> condition) {
 
         return new GuiAction((event, args) -> {
+
+            // Condition check
+            if(condition.isPresent()) {
+                Condition conditionValue = condition.get().get();
+
+                boolean isValid = conditionValue.isValid();
+                Optional<String> errorMessage = conditionValue.getErrorMessage();
+
+                if(!isValid) {
+                    errorMessage.ifPresent(s -> event.getWhoClicked().sendMessage(s));
+                    return;
+                }
+            }
 
             String selectedValue = args;
 

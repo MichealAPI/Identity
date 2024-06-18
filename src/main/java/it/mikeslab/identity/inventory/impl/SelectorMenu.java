@@ -15,7 +15,7 @@ public class SelectorMenu extends GuiTemplate implements ActionListener {
 
         this.injectAction(
                 "select",
-                this.handleSelection(Optional.empty(), true)
+                this.handleSelection(Optional.empty(), true, Optional.empty())
         );
     }
 

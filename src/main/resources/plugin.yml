@@ -1,4 +1,4 @@
-name: WidenIdentity
+name: Identity
 version: '${project.version}'
 main: it.mikeslab.identity.IdentityPlugin
 api-version: '1.14'

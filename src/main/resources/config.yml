@@ -1,3 +1,15 @@
+#################################################################
+# +-----------------------------------------------------------+ #
+# |                          Identity                         | #
+# |                        By MikesLab                        | #
+# +-----------------------------------------------------------+ #
+#################################################################
+
+#################################################################
+# ----------------------- Donations <3 ------------------------ #
+# ------------------- donation.mikeslab.it -------------------- #
+#################################################################
+
 sentry:
   enabled: true
   dsn: "https://824b6bf15450fd6639da49ad58460e09@o4504045887029248.ingest.us.sentry.io/4507119803039744" # Sentry DSN
@@ -14,30 +26,19 @@ anvil-confirm-item-model-data: 1010
 
 chat-format: "<symbol> <yellow><age> <gray><firstname> <lastname><blue>: <white><message>"
 
-features:
-  surname: true
-max-age: 100
-default-age: 18
-min-age: 12
-
-female-symbol: ♀
-male-symbol: ♂
-other-gender-symbol: ⚥
-
 kick-if-saving-error: true
 
 command-aliases: "identity|id"
 enable-chat-formatter: true
 first-char-uppercase: true
 
-chat-distance: 10
-
+chat-distance: 10 # -1 for unlimited
 
 guis:
-  roblox:
+  test:
     path: inventories/selector.yml
     type: SELECTOR
     mandatory: true
-  main-roblox:
+  main-test:
     path: inventories/main.yml
     type: MAIN

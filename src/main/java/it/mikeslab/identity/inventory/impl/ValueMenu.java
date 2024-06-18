@@ -3,29 +3,37 @@ package it.mikeslab.identity.inventory.impl;
 import it.mikeslab.commons.api.inventory.pojo.GuiDetails;
 import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
 import it.mikeslab.identity.IdentityPlugin;
+import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.ValueMenuContext;
 import it.mikeslab.identity.inventory.action.ActionListener;
 import it.mikeslab.identity.inventory.impl.template.GuiTemplate;
+import it.mikeslab.identity.pojo.Condition;
 import it.mikeslab.identity.pojo.InventorySettings;
 import lombok.Getter;
 import lombok.Setter;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @Getter @Setter
 public class ValueMenu extends GuiTemplate implements ActionListener {
 
-    private static final Map<String, BiFunction<Double, Double, Double>> OPERATIONS = Map.of(
-            "+", (a, b) -> a + b,
-            "-", (a, b) -> a - b,
-            "*", (a, b) -> a * b,
-            "/", (a, b) -> a / b
-    );
+    private static final Map<String, BiFunction<Double, Double, Double>> OPERATIONS;
+
+    static {
+        Map<String, BiFunction<Double, Double, Double>> operations = new HashMap<>();
+        operations.put("+", (a, b) -> a + b);
+        operations.put("-", (a, b) -> a - b);
+        operations.put("*", (a, b) -> a * b);
+        operations.put("/", (a, b) -> a / b);
+        OPERATIONS = Collections.unmodifiableMap(operations);
+    }
 
     private double value;
 
@@ -44,17 +52,18 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
         this.injectAction("value", this.applyMathOperation());
         this.injectAction(
                 "select",
-                this.handleSelection(valueSupplier, true),
-                this.isValueInRange()
+                this.handleSelection(valueSupplier, true, Optional.of(this::isValueInRange))
         );
     }
 
 
     @Override
     public void setPlaceholders(Player player, GuiDetails guiDetails) {
-        guiDetails.setPlaceholders(
-                Map.of("%value%", value + "")
-        );
+
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%value%", this.getValue() + "");
+
+        guiDetails.setPlaceholders(placeholders);
 
         super.setPlaceholders(player, guiDetails);
     }
@@ -62,8 +71,6 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
 
     @Override
     public void show(Player player) {
-
-        // todo limits and other stuff
 
         GuiDetails detailsClone = this
                 .getInventoryContext()
@@ -110,12 +117,15 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
      * Handle the selection of the value
      * @return The action listener
      */
-    private Supplier<Boolean> isValueInRange() {
-        return () -> this.getValueSupplier().get() >= this.min && this.getValueSupplier().get() <= this.max;
-    }
+    private Condition isValueInRange() {
+        return new Condition(
+                this.value >= this.min && this.value <= this.max,
+                Optional.of(getInstance().getLanguage().getSerializedString(
+                        LanguageKey.VALUE_OUT_OF_RANGE,
+                        Placeholder.unparsed("min", this.min + ""),
+                        Placeholder.unparsed("max", this.max + "")
 
-    private Supplier<Double> getValueSupplier() {
-        return () -> this.value;
+                )));
     }
 
     private boolean isOperator(String character) {
