@@ -30,14 +30,12 @@ public enum Operator {
 
     public boolean apply(Operand... operands) {
 
-        if (this == MODULO) {
-            if (operands.length != 3) {
-                throw new IllegalArgumentException("Three operands are required for the modulo operation.");
-            }
-        } else {
-            if (operands.length != 2) {
-                throw new IllegalArgumentException("Two operands are required for this operation.");
-            }
+        if(operands.length < 2) {
+            throw new IllegalArgumentException("At least two operands are required for this operation.");
+        }
+
+        if(operands.length != 3 && this == MODULO) {
+            throw new IllegalArgumentException("Three operands are required for this operation.");
         }
 
         double operand1 = operands[0].asDouble();
