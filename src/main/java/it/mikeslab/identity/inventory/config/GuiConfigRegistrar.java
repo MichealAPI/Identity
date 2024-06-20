@@ -44,6 +44,8 @@ public class GuiConfigRegistrar {
     @Getter
     private final InputMenuLoader inputMenuLoader;
 
+    private String inventoryKeyId; // Internal use, rapid switching between keys
+
 
     public GuiConfigRegistrar(IdentityPlugin instance, ConfigurationSection section) {
         this.instance = instance;
@@ -61,9 +63,11 @@ public class GuiConfigRegistrar {
         for(Map.Entry<String, GuiRegistrarCache> entry : cache.entrySet()) {
 
             String keyId = entry.getKey();
+            this.inventoryKeyId = keyId;
+
             GuiRegistrarCache cache = entry.getValue();
 
-            guis.put(keyId, createInventory(keyId, cache));
+            guis.put(keyId, createInventory(cache));
 
         }
 
@@ -76,8 +80,11 @@ public class GuiConfigRegistrar {
      */
     public void register() {
         for(String key : section.getKeys(false)) {
+
+            this.inventoryKeyId = key;
+
             ConfigurationSection configSection = section.getConfigurationSection(key);
-            if (!validateConfigSection(key, configSection)) {
+            if (configSection == null || !validateConfigSection(configSection)) {
                 continue;
             }
 
@@ -93,13 +100,13 @@ public class GuiConfigRegistrar {
             }
 
             if (type == InventoryType.MAIN) {
-                processMainType(key);
+                this.fallbackGuiIdentifier = key;
             }
 
             this.cache.put(key, new GuiRegistrarCache(type, path, configSection));
 
             if(mandatory) {
-                addMandatoryInventory(key, displayName);
+                mandatoryInventories.put(key, displayName);
             }
         }
 
@@ -116,30 +123,28 @@ public class GuiConfigRegistrar {
 
     /**
      * Validate the configuration section
-     * @param key The key of the configuration section
      * @param configSection The configuration section
      * @return Whether the configuration section is valid
      */
-    private boolean validateConfigSection(String key, ConfigurationSection configSection) {
+    private boolean validateConfigSection(ConfigurationSection configSection) {
         String typeAsString = configSection.getString(ConfigField.TYPE.getField());
         InventoryType type = InventoryType.fromString(typeAsString);
         String path = configSection.getString(ConfigField.PATH.getField());
 
         if(typeAsString == null) {
-            logMissingRequiredField(key);
+            logMissingRequiredField();
             return false;
         }
 
         if(type == null) {
-            logMissingRequiredField(key);
+            logMissingRequiredField();
             return false;
         }
 
         if(path == null) {
-            logMissingRequiredField(key);
+            logMissingRequiredField();
             return false;
         }
-
 
         boolean mandatory = configSection.getBoolean(ConfigField.MANDATORY.getField(), false); // mandatory is defaulted to false
 
@@ -148,7 +153,7 @@ public class GuiConfigRegistrar {
                     IdentityPlugin.PLUGIN_NAME,
                     Level.WARNING,
                     LoggerUtil.LogSource.CONFIG,
-                    "Inventory '" + key + "' is marked as mandatory but is a main menu"
+                    "Inventory '" + inventoryKeyId + "' is marked as mandatory but is a main menu"
             );
             return false;
         }
@@ -156,7 +161,7 @@ public class GuiConfigRegistrar {
         return true;
     }
 
-    private void logMissingRequiredField(String inventoryKeyId) {
+    private void logMissingRequiredField() {
         LoggerUtil.log(
                 IdentityPlugin.PLUGIN_NAME,
                 Level.WARNING,
@@ -176,25 +181,8 @@ public class GuiConfigRegistrar {
         baseValue = configSection.getDouble(ConfigField.BASE.getField(), 0);
     }
 
-    /**
-     * Process the 'main' type configuration section
-     * @param key The key of the configuration section
-     */
-    private void processMainType(String key) {
-        this.fallbackGuiIdentifier = key;
-    }
 
-    /**
-     * Add a mandatory inventory to the registrar
-     * @param key The key of the inventory
-     * @param displayName The display name of the inventory
-     */
-    private void addMandatoryInventory(String key, String displayName) {
-        mandatoryInventories.put(key, displayName);
-    }
-
-
-    private CustomInventory createInventory(String keyId, GuiRegistrarCache cache) {
+    private CustomInventory createInventory(GuiRegistrarCache cache) {
 
         // Replace the path with the correct separator
         String path = cache.getPath().replace("\\", File.separator) // todo should I remove this?
@@ -223,7 +211,7 @@ public class GuiConfigRegistrar {
 
         // Create the gui config
         InventorySettings settings = new InventorySettings(
-                keyId,
+                inventoryKeyId,
                 relativePath,
                 false, // todo configurable
                 cache.getInventoryType()

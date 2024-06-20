@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+
+
 @Data
 public class InputMenu implements ActionListener {
 
@@ -156,6 +158,7 @@ public class InputMenu implements ActionListener {
 
         return new Condition(result, Optional.ofNullable(errorMessage));
     }
+
 
 
 }
