@@ -49,6 +49,12 @@ public class ConditionParserImpl implements ConditionParser {
         return operator.apply(operands);
     }
 
+
+    /**
+     * Parse the or condition
+     * @param condition The condition
+     * @return The result
+     */
     private boolean or(GuiCondition condition) {
         String[] orConditions = condition.getCondition().split("\\|\\|");
 
@@ -65,6 +71,11 @@ public class ConditionParserImpl implements ConditionParser {
 
     }
 
+    /**
+     * Parse the and condition
+     * @param condition The condition
+     * @return The result
+     */
     private boolean and(GuiCondition condition) {
         String[] andConditions = condition.getCondition().split("&&");
         for (String conditionString : andConditions) {

@@ -70,77 +70,112 @@ public class GuiConfigRegistrar {
         return guis;
     }
 
-    // todo too complex implementation
+
+    /**
+     * Register the configuration for each custom inventory
+     */
     public void register() {
-
         for(String key : section.getKeys(false)) {
-
             ConfigurationSection configSection = section.getConfigurationSection(key);
+            if (!validateConfigSection(key, configSection)) {
+                continue;
+            }
 
             String typeAsString = configSection.getString(ConfigField.TYPE.getField());
             InventoryType type = InventoryType.fromString(typeAsString);
             String displayName = configSection.getString(ConfigField.DISPLAY_NAME.getField(), key); // display name defaults to key
             String path = configSection.getString(ConfigField.PATH.getField());
 
-            if(typeAsString == null || type == null || path == null) {
-                LoggerUtil
-                        .log(
-                                IdentityPlugin.PLUGIN_NAME,
-                                Level.WARNING,
-                                LoggerUtil.LogSource.CONFIG,
-                                "Inventory '" + key + "' is missing a required field (Required fields:"
-                                        + ConfigField.TYPE.getField() + ", " + ConfigField.PATH.getField() + ")"
-                        );
-                continue;
-            }
-
-            // if the inventory should be kept open until completed
             boolean mandatory = configSection.getBoolean(ConfigField.MANDATORY.getField(), false); // mandatory is defaulted to false
 
-            if(mandatory && type == InventoryType.MAIN) {
-                LoggerUtil
-                        .log(
-                                IdentityPlugin.PLUGIN_NAME,
-                                Level.WARNING,
-                                LoggerUtil.LogSource.CONFIG,
-                                "Inventory '" + key + "' is marked as mandatory but is a main menu"
-                        );
-                continue;
+            if (type == InventoryType.VALUE) {
+                processValueType(configSection);
             }
 
-            if(type == InventoryType.VALUE) {
-                min = configSection.getDouble(ConfigField.MIN.getField(), Double.MIN_VALUE);
-                max = configSection.getDouble(ConfigField.MAX.getField(), Double.MAX_VALUE);
-                baseValue = configSection.getDouble(ConfigField.BASE.getField(), 0);
-            }
-
-            if(type == InventoryType.MAIN) {
-                this.fallbackGuiIdentifier = key;
+            if (type == InventoryType.MAIN) {
+                processMainType(key);
             }
 
             this.cache.put(key, new GuiRegistrarCache(type, path, configSection));
 
-            // If it's a mandatory inventory, key is added to list
             if(mandatory) {
-                mandatoryInventories.put(key, displayName);
+                addMandatoryInventory(key, displayName);
             }
-
         }
 
         if(fallbackGuiIdentifier == null) {
-            LoggerUtil
-                    .log(
-                            IdentityPlugin.PLUGIN_NAME,
-                            Level.SEVERE,
-                            LoggerUtil.LogSource.CONFIG,
-                            "No main menu found in the configuration"
-                    );
-
+            LoggerUtil.log(
+                    IdentityPlugin.PLUGIN_NAME,
+                    Level.SEVERE,
+                    LoggerUtil.LogSource.CONFIG,
+                    "No main menu found in the configuration"
+            );
             Bukkit.getPluginManager().disablePlugin(instance);
         }
+    }
 
+    /**
+     * Validate the configuration section
+     * @param key The key of the configuration section
+     * @param configSection The configuration section
+     * @return Whether the configuration section is valid
+     */
+    private boolean validateConfigSection(String key, ConfigurationSection configSection) {
+        String typeAsString = configSection.getString(ConfigField.TYPE.getField());
+        InventoryType type = InventoryType.fromString(typeAsString);
+        String path = configSection.getString(ConfigField.PATH.getField());
 
+        if(typeAsString == null || type == null || path == null) {
+            LoggerUtil.log(
+                    IdentityPlugin.PLUGIN_NAME,
+                    Level.WARNING,
+                    LoggerUtil.LogSource.CONFIG,
+                    "Inventory '" + key + "' is missing a required field (Required fields:"
+                            + ConfigField.TYPE.getField() + ", " + ConfigField.PATH.getField() + ")"
+            );
+            return false;
+        }
 
+        boolean mandatory = configSection.getBoolean(ConfigField.MANDATORY.getField(), false); // mandatory is defaulted to false
+
+        if(mandatory && type == InventoryType.MAIN) {
+            LoggerUtil.log(
+                    IdentityPlugin.PLUGIN_NAME,
+                    Level.WARNING,
+                    LoggerUtil.LogSource.CONFIG,
+                    "Inventory '" + key + "' is marked as mandatory but is a main menu"
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Process the 'value' type configuration section
+     * @param configSection The configuration section
+     */
+    private void processValueType(ConfigurationSection configSection) {
+        min = configSection.getDouble(ConfigField.MIN.getField(), Double.MIN_VALUE);
+        max = configSection.getDouble(ConfigField.MAX.getField(), Double.MAX_VALUE);
+        baseValue = configSection.getDouble(ConfigField.BASE.getField(), 0);
+    }
+
+    /**
+     * Process the 'main' type configuration section
+     * @param key The key of the configuration section
+     */
+    private void processMainType(String key) {
+        this.fallbackGuiIdentifier = key;
+    }
+
+    /**
+     * Add a mandatory inventory to the registrar
+     * @param key The key of the inventory
+     * @param displayName The display name of the inventory
+     */
+    private void addMandatoryInventory(String key, String displayName) {
+        mandatoryInventories.put(key, displayName);
     }
 
 
