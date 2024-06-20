@@ -67,8 +67,6 @@ public class PlayerListener implements Listener {
 
         if(identity != null) {
 
-            System.out.println(identity.toString());
-
             // save to db
             instance.getIdentityDatabase().upsert(identity);
             instance.getSetupCacheHandler().remove(playerUUID);

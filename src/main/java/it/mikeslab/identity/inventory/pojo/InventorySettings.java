@@ -1,4 +1,4 @@
-package it.mikeslab.identity.pojo;
+package it.mikeslab.identity.inventory.pojo;
 
 import it.mikeslab.identity.inventory.InventoryType;
 import lombok.AllArgsConstructor;
@@ -13,8 +13,6 @@ import java.nio.file.Path;
 public class InventorySettings {
 
     private String fieldIdentifier;
-
-    // private final int id;
 
     private Path relativePath; // The file name of the inventory
 

@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 public class StringUtil {
 
 
-    public String capitalize(String string) {
+    public String capitalize(String string) { // todo implement
         if (string == null || string.isEmpty()) {
             return string;
         }

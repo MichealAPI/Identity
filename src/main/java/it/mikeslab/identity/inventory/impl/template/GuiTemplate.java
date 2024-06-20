@@ -5,14 +5,13 @@ import it.mikeslab.commons.api.inventory.config.GuiConfigImpl;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.CustomInventory;
 import it.mikeslab.identity.inventory.CustomInventoryContext;
-import it.mikeslab.identity.inventory.InventoryContext;
-import it.mikeslab.identity.pojo.InventorySettings;
+import it.mikeslab.identity.inventory.pojo.InventoryContext;
+import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import lombok.Data;
 
 import java.io.File;
 import java.util.Optional;
 
-// TODO Extract to LabCommons
 @Data
 public abstract class GuiTemplate implements CustomInventory {
 

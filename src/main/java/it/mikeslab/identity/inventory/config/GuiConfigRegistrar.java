@@ -4,12 +4,12 @@ import it.mikeslab.commons.api.logger.LoggerUtil;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.CustomInventory;
 import it.mikeslab.identity.inventory.InventoryType;
-import it.mikeslab.identity.inventory.ValueMenuContext;
+import it.mikeslab.identity.inventory.pojo.ValueMenuContext;
 import it.mikeslab.identity.inventory.impl.InputMenu;
 import it.mikeslab.identity.inventory.impl.MainMenu;
 import it.mikeslab.identity.inventory.impl.SelectorMenu;
 import it.mikeslab.identity.inventory.impl.ValueMenu;
-import it.mikeslab.identity.pojo.InventorySettings;
+import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import it.mikeslab.identity.util.InventoryMap;
 import it.mikeslab.identity.util.inventory.input.InputMenuLoader;
 import lombok.Getter;
@@ -125,16 +125,21 @@ public class GuiConfigRegistrar {
         InventoryType type = InventoryType.fromString(typeAsString);
         String path = configSection.getString(ConfigField.PATH.getField());
 
-        if(typeAsString == null || type == null || path == null) {
-            LoggerUtil.log(
-                    IdentityPlugin.PLUGIN_NAME,
-                    Level.WARNING,
-                    LoggerUtil.LogSource.CONFIG,
-                    "Inventory '" + key + "' is missing a required field (Required fields:"
-                            + ConfigField.TYPE.getField() + ", " + ConfigField.PATH.getField() + ")"
-            );
+        if(typeAsString == null) {
+            logMissingRequiredField(key);
             return false;
         }
+
+        if(type == null) {
+            logMissingRequiredField(key);
+            return false;
+        }
+
+        if(path == null) {
+            logMissingRequiredField(key);
+            return false;
+        }
+
 
         boolean mandatory = configSection.getBoolean(ConfigField.MANDATORY.getField(), false); // mandatory is defaulted to false
 
@@ -149,6 +154,16 @@ public class GuiConfigRegistrar {
         }
 
         return true;
+    }
+
+    private void logMissingRequiredField(String inventoryKeyId) {
+        LoggerUtil.log(
+                IdentityPlugin.PLUGIN_NAME,
+                Level.WARNING,
+                LoggerUtil.LogSource.CONFIG,
+                "Inventory '" + inventoryKeyId + "' is missing a required field (Required fields:"
+                        + ConfigField.TYPE.getField() + ", " + ConfigField.PATH.getField() + ")"
+        );
     }
 
     /**

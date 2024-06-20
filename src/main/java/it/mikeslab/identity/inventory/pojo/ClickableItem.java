@@ -1,4 +1,4 @@
-package it.mikeslab.identity.pojo;
+package it.mikeslab.identity.inventory.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

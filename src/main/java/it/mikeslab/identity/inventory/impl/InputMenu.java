@@ -6,7 +6,7 @@ import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.CustomInventoryContext;
 import it.mikeslab.identity.inventory.action.ActionListener;
 import it.mikeslab.identity.pojo.Condition;
-import it.mikeslab.identity.pojo.InventorySettings;
+import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import it.mikeslab.identity.util.inventory.input.InputMenuContext;
 import it.mikeslab.identity.util.inventory.input.InputMenuLoader;
 import lombok.Data;
@@ -51,10 +51,9 @@ public class InputMenu implements ActionListener {
         boolean closeOnFail = customContext.getSettings().isCloseOnFail();
 
         new AnvilGUI.Builder()
-                .onClose(stateSnapshot -> {
-                    this.openFallbackGui(player);
-                })
+                .onClose(stateSnapshot -> this.openFallbackGui(player))
                 .onClick((slot, stateSnapshot) -> { // Either use sync or async variant, not both
+
                     if(slot != AnvilGUI.Slot.OUTPUT) {
                         return Collections.emptyList();
                     }
@@ -86,6 +85,7 @@ public class InputMenu implements ActionListener {
 
                     this.openFallbackGui(player);
                     return Collections.emptyList();
+
                 })
                 .text(context.getBasePlaceholder())
                 .title(context.getTitle()) //set the title of the GUI (only works in 1.14+)

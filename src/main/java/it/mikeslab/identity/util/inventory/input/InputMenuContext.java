@@ -4,6 +4,9 @@ import it.mikeslab.commons.api.inventory.pojo.GuiElement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Represents the context of an input menu.
+ */
 @Getter
 @RequiredArgsConstructor
 public class InputMenuContext {

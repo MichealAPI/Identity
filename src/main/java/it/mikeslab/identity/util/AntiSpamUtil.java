@@ -9,8 +9,14 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class AntiSpamUtil {
 
-    public boolean isSpamming(String message, String lastMessage) {
-        return message.toLowerCase().contains(lastMessage);
+    /**
+     * Check if a message is spamming
+     * @param m1 the message to check
+     * @param m2 the message to compare
+     * @return
+     */
+    public boolean isSpamming(String m1, String m2) {
+        return m1.toLowerCase().contains(m2);
     }
 
 }

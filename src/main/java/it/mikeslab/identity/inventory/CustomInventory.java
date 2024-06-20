@@ -4,14 +4,14 @@ import it.mikeslab.commons.api.inventory.CustomGui;
 import it.mikeslab.commons.api.inventory.event.GuiInteractEvent;
 import it.mikeslab.commons.api.inventory.pojo.GuiDetails;
 import it.mikeslab.identity.IdentityPlugin;
-import it.mikeslab.identity.pojo.InventorySettings;
+import it.mikeslab.identity.inventory.pojo.InventoryContext;
+import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import org.bukkit.entity.Player;
 
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public interface CustomInventory {
 

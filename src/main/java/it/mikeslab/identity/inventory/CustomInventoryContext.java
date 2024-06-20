@@ -1,7 +1,8 @@
 package it.mikeslab.identity.inventory;
 
 import it.mikeslab.identity.IdentityPlugin;
-import it.mikeslab.identity.pojo.InventorySettings;
+import it.mikeslab.identity.inventory.pojo.InventoryContext;
+import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

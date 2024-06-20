@@ -3,7 +3,7 @@ package it.mikeslab.identity.inventory.impl;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.action.ActionListener;
 import it.mikeslab.identity.inventory.impl.template.GuiTemplate;
-import it.mikeslab.identity.pojo.InventorySettings;
+import it.mikeslab.identity.inventory.pojo.InventorySettings;
 
 import java.util.Optional;
 
