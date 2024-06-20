@@ -44,11 +44,6 @@ public class InputMenuLoader {
                 " " // Empty text
         );
 
-        String errorPlaceholder = config.getString(
-                InputMenuField.ERROR_PLACEHOLDER.getField(),
-                " " // Empty text
-        );
-
         int minLength = config.getInt(
                 InputMenuField.MIN_LENGTH.getField(),
                 -1 // No limit
@@ -81,7 +76,6 @@ public class InputMenuLoader {
         InputMenuContext inputMenuContext = new InputMenuContext(
                 title,
                 basePlaceholder,
-                errorPlaceholder,
                 clickableElement,
                 minLength,
                 maxLength,
@@ -104,7 +98,6 @@ public class InputMenuLoader {
     private enum InputMenuField {
 
         TITLE("title"),
-        ERROR_PLACEHOLDER("errorPlaceholder"),
         BASE_PLACEHOLDER("basePlaceholder"),
         CLICKABLE_ELEMENT("element"),
         MIN_LENGTH("minLength"),

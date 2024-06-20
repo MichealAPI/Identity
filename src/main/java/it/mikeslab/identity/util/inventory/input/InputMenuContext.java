@@ -9,8 +9,7 @@ import lombok.RequiredArgsConstructor;
 public class InputMenuContext {
 
     private final String title,
-            basePlaceholder,
-            errorPlaceholder;
+            basePlaceholder;
 
     private final GuiElement clickableElement;
 

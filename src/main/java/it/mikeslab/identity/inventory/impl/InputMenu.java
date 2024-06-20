@@ -63,6 +63,7 @@ public class InputMenu implements ActionListener {
 
                     Supplier<Condition> conditionSupplier = () -> isValid(text, context);
                     boolean isInputValid = conditionSupplier.get().isValid();
+                    String errorMessage = conditionSupplier.get().getErrorMessage().orElse(null);
 
                     if(isInputValid) {
 
@@ -77,9 +78,9 @@ public class InputMenu implements ActionListener {
                         return Collections.emptyList();
                     }
 
-                    if(!closeOnFail) {
+                    if(!closeOnFail && errorMessage != null) {
                         return Collections.singletonList(
-                                AnvilGUI.ResponseAction.replaceInputText(context.getErrorPlaceholder())
+                                AnvilGUI.ResponseAction.replaceInputText(errorMessage)
                         );
                     }
 
@@ -88,7 +89,7 @@ public class InputMenu implements ActionListener {
                 })
                 .text(context.getBasePlaceholder())
                 .title(context.getTitle()) //set the title of the GUI (only works in 1.14+)
-                .itemOutput(context.getClickableElement().create())
+                .itemLeft(context.getClickableElement().create())
                 .plugin(instance)
                 .open(player);
 
@@ -146,7 +147,12 @@ public class InputMenu implements ActionListener {
             );
         }
 
-        // todo spam flags
+        if(instance.getAntiSpamHandler().isSpam(value)) {
+            result = false;
+            errorMessage = instance.getLanguage().getSerializedString(
+                    LanguageKey.INPUT_SPAM
+            );
+        }
 
         return new Condition(result, Optional.ofNullable(errorMessage));
     }

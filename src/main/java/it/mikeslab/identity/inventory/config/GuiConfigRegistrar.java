@@ -175,7 +175,7 @@ public class GuiConfigRegistrar {
         InventorySettings settings = new InventorySettings(
                 keyId,
                 relativePath,
-                true,
+                false, // todo configurable
                 cache.getInventoryType()
         );
 
