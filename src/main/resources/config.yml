@@ -49,7 +49,7 @@ chat-distance: -1 # -1 for unlimited (Expressed in blocks)
 # Input: The player can input a value which can be rule-checked and spam-filtered
 # Value: The player can, given a base value, perform config-specified operations on it and then, select the result
 # ------------------------------------------------------------- #
-guis:
+guis: {}
   #test:
   #  path: inventories/selector.yml
   #  type: SELECTOR # SELECTOR, MAIN, INPUT, VALUE
@@ -64,7 +64,3 @@ guis:
 
   # Other settings can be found in the documentation and
   # can be applied only inside the specific inventory file
-
-  main-test:
-    path: inventories/main.yml
-    type: MAIN

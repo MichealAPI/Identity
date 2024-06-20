@@ -14,7 +14,6 @@ public class AntiSpamImpl implements AntiSpam {
     private final Configurable spamConfigurable;
 
     private List<String> badWords;
-    private double similarityLevel;
 
     @Override
     public boolean isSpam(String message) {
@@ -26,20 +25,11 @@ public class AntiSpamImpl implements AntiSpam {
         }
 
         boolean isSpam = false;
-        double similarity;
 
         for(int i = 0; i < badWords.size() && !isSpam; i++) {
 
-
             String badWord = badWords.get(i);
-            message = message.toLowerCase();
-
-            similarity = AntiSpamUtil.calculateSimilarity(message, badWord);
-
-
-            if(similarity >= similarityLevel) {
-                isSpam = true;
-            }
+            isSpam = AntiSpamUtil.isSpamming(message, badWord);
 
         }
 
@@ -57,8 +47,6 @@ public class AntiSpamImpl implements AntiSpam {
             YamlConfiguration yamlConfig = spamConfigurable.getConfiguration();
 
             badWords = yamlConfig.getStringList("badWords");
-
-            similarityLevel = yamlConfig.getDouble("similarityLevel", 50D);
 
             return true;
 
