@@ -47,8 +47,6 @@ public class SetupCacheHandler {
                 entryValue.getValue()
         );
 
-        System.out.println(identityMap.get(uuid).getValues().toString());
-
     }
 
     /**

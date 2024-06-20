@@ -52,8 +52,10 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
         this.injectAction("value", this.applyMathOperation());
         this.injectAction(
                 "select",
-                this.handleSelection(valueSupplier, true, Optional.of(this::isValueInRange))
+                this.handleSelection(valueSupplier, true, Optional.empty())
         );
+
+
     }
 
 
@@ -76,6 +78,13 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
                 .getInventoryContext()
                 .getDefaultGuiDetails()
                 .clone();
+
+        detailsClone.setInjectedConditionPlaceholders(
+                Collections.singletonMap(
+                        "%value%",
+                        ()-> String.valueOf(getValue())
+                )
+        );
 
         this.setPlaceholders(player, detailsClone);
 
@@ -104,6 +113,22 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
             }
 
             double value = Double.parseDouble(amount);
+            double result = OPERATIONS
+                    .get(operator)
+                    .apply(this.value, value);
+
+            Condition condition = isValueInRange(result);
+            boolean isValid = condition.isValid();
+            String errorMessage = condition.getErrorMessage().orElse(null);
+
+            if(!isValid) {
+
+                if(errorMessage != null) {
+                    event.getWhoClicked().sendMessage(errorMessage);
+                }
+
+                return;
+            }
 
             this.value = OPERATIONS
                     .get(operator)
@@ -117,9 +142,9 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
      * Handle the selection of the value
      * @return The action listener
      */
-    private Condition isValueInRange() {
+    private Condition isValueInRange(double value) {
         return new Condition(
-                this.value >= this.min && this.value <= this.max,
+                value >= this.min && value <= this.max,
                 Optional.of(getInstance().getLanguage().getSerializedString(
                         LanguageKey.VALUE_OUT_OF_RANGE,
                         Placeholder.unparsed("min", this.min + ""),

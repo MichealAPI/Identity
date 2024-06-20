@@ -10,6 +10,7 @@ import it.mikeslab.commons.api.database.async.AsyncDatabaseImpl;
 import it.mikeslab.commons.api.database.config.ConfigDatabaseUtil;
 import it.mikeslab.commons.api.formatter.FormatUtil;
 import it.mikeslab.commons.api.inventory.GuiFactory;
+import it.mikeslab.commons.api.inventory.config.ConditionParser;
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
 import it.mikeslab.commons.api.inventory.event.GuiListener;
 import it.mikeslab.commons.api.inventory.factory.GuiFactoryImpl;
@@ -27,6 +28,7 @@ import it.mikeslab.identity.handler.AntiSpamImpl;
 import it.mikeslab.identity.handler.IdentityCacheHandler;
 import it.mikeslab.identity.handler.SetupCacheHandler;
 import it.mikeslab.identity.inventory.action.ActionRegistrarImpl;
+import it.mikeslab.identity.inventory.config.ConditionParserImpl;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
 import it.mikeslab.identity.papi.IdentityExpansion;
 import it.mikeslab.identity.pojo.Identity;
@@ -69,6 +71,8 @@ public final class IdentityPlugin extends JavaPlugin {
     private Map<String, GuiConfig> cachedGuiConfig;
 
     private ActionHandler actionHandler;
+
+    private ConditionParser conditionParser;
 
     @Override
     public void onEnable() {
@@ -172,6 +176,7 @@ public final class IdentityPlugin extends JavaPlugin {
         this.guiConfigRegistrar.register();
 
         this.guiFactory.setActionHandler(actionHandler);
+        this.guiFactory.setConditionParser(conditionParser);
 
     }
 
@@ -182,6 +187,8 @@ public final class IdentityPlugin extends JavaPlugin {
         this.actionHandler = new ActionHandlerImpl(
                 actionRegistrar.loadActions()
         );
+
+        this.conditionParser = new ConditionParserImpl();
 
     }
 

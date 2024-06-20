@@ -47,7 +47,7 @@ public class IdentityCommand extends BaseCommand {
         Identity filterIdentity = new Identity(); //todo new Identity(targetUUID);
         filterIdentity.setUuid(targetUUID);
 
-        instance.getIdentityDatabase().delete(filterIdentity).thenAcceptAsync(
+        instance.getIdentityCacheHandler().dropIdentity(targetUUID).thenAcceptAsync(
                 deleted -> {
                     if(deleted) {
 
@@ -58,10 +58,6 @@ public class IdentityCommand extends BaseCommand {
                                         Placeholder.unparsed("player", targetPlayer.getName()))
                         );
 
-                        instance.getIdentityCacheHandler()
-                                .dropIdentity(targetUUID);
-
-
                         // Kick out to init a new Identity setup session
                         Bukkit.getScheduler().runTask(instance, () -> {
                             targetPlayer.kickPlayer(
@@ -71,7 +67,7 @@ public class IdentityCommand extends BaseCommand {
 
                     } else {
 
-                        // Player not found in the database/cache
+                        // Player isn't found in the database
                         audiences.sender(sender).sendMessage(instance.getLanguage().getComponent(LanguageKey.IDENTITY_NOT_FOUND,
                                 Placeholder.unparsed("player", targetPlayer.getName())));
                     }

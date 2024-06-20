@@ -61,14 +61,17 @@ public class InputMenu implements ActionListener {
 
                     String text = stateSnapshot.getText();
 
-                    boolean isInputValid = isValid(text, context); // todo convert
+                    Supplier<Condition> conditionSupplier = () -> isValid(text, context);
+                    boolean isInputValid = conditionSupplier.get().isValid();
+
                     if(isInputValid) {
 
                         // Saves to identity
                         this.handleInput(
                                 text,
                                 player,
-                                context
+                                context,
+                                conditionSupplier
                         );
 
                         return Collections.emptyList();
@@ -85,22 +88,21 @@ public class InputMenu implements ActionListener {
                 })
                 .text(context.getBasePlaceholder())
                 .title(context.getTitle()) //set the title of the GUI (only works in 1.14+)
-                .itemRight(context.getClickableElement().create())
+                .itemOutput(context.getClickableElement().create())
                 .plugin(instance)
                 .open(player);
 
 
     }
 
-    private void handleInput(String input, Player player, InputMenuContext context) {
+    private void handleInput(String input, Player player, InputMenuContext context, Supplier<Condition> condition) {
 
         GuiInteractEvent event = new GuiInteractEvent(
                 player,
                 context.getClickableElement()
         );
 
-        Supplier<Condition> conditionSupplier = () -> isValid(input, context);
-        this.handleSelection(Optional.of(() -> input), true, Optional.of(conditionSupplier))
+        this.handleSelection(Optional.of(() -> input), true, Optional.of(condition))
                 .getAction()
                 .accept(event, input);
 

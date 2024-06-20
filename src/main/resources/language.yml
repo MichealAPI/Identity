@@ -4,5 +4,13 @@ identity-saved: Your identity has been saved
 
 missing-identity-data: You are missing identity data. Please complete the form.
 
+mandatory-close-attempt: "These inventories are mandatory to be completed: <missing>"
+
 identity-reset-for: "Identity reset for <player>"
 identity-not-found: "Identity not found for <player>"
+
+input-too-long: "Input too long. Max length: <max>"
+input-too-short: "Input too short. Min length: <min>"
+input-too-many-words: "Input too many words. Max words: <max>"
+input-too-few-words: "Input too few words. Min words: <min>"
+value-out-of-range: "Value out of range. Min: <min>, Max: <max>"

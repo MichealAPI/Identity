@@ -24,9 +24,9 @@ import java.util.UUID;
 public class ChatListener implements Listener {
 
     private final IdentityPlugin instance;
-    private Identity identity;
 
-    // todo enable - disable chatformat
+    private Identity identity; // internal identity cache
+
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
 

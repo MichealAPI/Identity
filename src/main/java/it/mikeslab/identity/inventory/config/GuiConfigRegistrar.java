@@ -36,8 +36,8 @@ public class GuiConfigRegistrar {
     private final Map<String, GuiRegistrarCache> cache = new HashMap<>();
 
     @Getter
-    private final List<String> mandatoryInventories = new ArrayList<>();
-
+    private final Map<String, String> mandatoryInventories = new HashMap<>(); // keyId in pair with displayName
+                                                                              // which could be defaulted to keyId in case of null
     @Getter
     private double min, max, baseValue;
 
@@ -63,14 +63,7 @@ public class GuiConfigRegistrar {
             String keyId = entry.getKey();
             GuiRegistrarCache cache = entry.getValue();
 
-            guis.put(
-                    keyId,
-                    createInventory(
-                            cache.getInventoryType(),
-                            cache.getSection().getString(ConfigField.PATH.getField),
-                            keyId
-                    )
-            );
+            guis.put(keyId, createInventory(keyId, cache));
 
         }
 
@@ -84,24 +77,25 @@ public class GuiConfigRegistrar {
 
             ConfigurationSection configSection = section.getConfigurationSection(key);
 
-            if (configSection == null) {
-                continue;
-            }
-
-            String typeAsString = configSection.getString(ConfigField.TYPE.getField);
-
-            if (typeAsString == null) {
-                continue;
-            }
-
+            String typeAsString = configSection.getString(ConfigField.TYPE.getField());
             InventoryType type = InventoryType.fromString(typeAsString);
+            String displayName = configSection.getString(ConfigField.DISPLAY_NAME.getField(), key); // display name defaults to key
+            String path = configSection.getString(ConfigField.PATH.getField());
 
-            if(type == null) {
+            if(typeAsString == null || type == null || path == null) {
+                LoggerUtil
+                        .log(
+                                IdentityPlugin.PLUGIN_NAME,
+                                Level.WARNING,
+                                LoggerUtil.LogSource.CONFIG,
+                                "Inventory '" + key + "' is missing a required field (Required fields:"
+                                        + ConfigField.TYPE.getField() + ", " + ConfigField.PATH.getField() + ")"
+                        );
                 continue;
             }
 
             // if the inventory should be kept open until completed
-            boolean mandatory = configSection.getBoolean(ConfigField.MANDATORY.getField, false); // mandatory is defaulted to false
+            boolean mandatory = configSection.getBoolean(ConfigField.MANDATORY.getField(), false); // mandatory is defaulted to false
 
             if(mandatory && type == InventoryType.MAIN) {
                 LoggerUtil
@@ -115,30 +109,20 @@ public class GuiConfigRegistrar {
             }
 
             if(type == InventoryType.VALUE) {
-                min = configSection.getDouble(ConfigField.MIN.getField, Double.MIN_VALUE);
-                max = configSection.getDouble(ConfigField.MAX.getField, Double.MAX_VALUE);
-                baseValue = configSection.getDouble(ConfigField.BASE.getField, 0);
-            }
-
-            CustomInventory customInventory = createInventory(
-                    type,
-                    configSection.getString(ConfigField.PATH.getField),
-                    key
-            );
-
-            if(customInventory == null) {
-                continue;
+                min = configSection.getDouble(ConfigField.MIN.getField(), Double.MIN_VALUE);
+                max = configSection.getDouble(ConfigField.MAX.getField(), Double.MAX_VALUE);
+                baseValue = configSection.getDouble(ConfigField.BASE.getField(), 0);
             }
 
             if(type == InventoryType.MAIN) {
                 this.fallbackGuiIdentifier = key;
             }
 
-            this.cache.put(key, new GuiRegistrarCache(type, configSection));
+            this.cache.put(key, new GuiRegistrarCache(type, path, configSection));
 
             // If it's a mandatory inventory, key is added to list
             if(mandatory) {
-                mandatoryInventories.add(key);
+                mandatoryInventories.put(key, displayName);
             }
 
         }
@@ -160,10 +144,10 @@ public class GuiConfigRegistrar {
     }
 
 
-    private CustomInventory createInventory(InventoryType type, String path, String id) {
+    private CustomInventory createInventory(String keyId, GuiRegistrarCache cache) {
 
         // Replace the path with the correct separator
-        path = path.replace("\\", File.separator) // todo should I remove this?
+        String path = cache.getPath().replace("\\", File.separator) // todo should I remove this?
                 .replace("/", File.separator);
 
         // Get the file
@@ -184,18 +168,18 @@ public class GuiConfigRegistrar {
         Path fullPath = configFile.toPath();
         Path rootPath = instance.getDataFolder().toPath();
 
-        // Get relative path
+        // Get the relative path
         Path relativePath = rootPath.relativize(fullPath);
 
         // Create the gui config
         InventorySettings settings = new InventorySettings(
-                id,
+                keyId,
                 relativePath,
                 true,
-                type
+                cache.getInventoryType()
         );
 
-        switch (type) {
+        switch (cache.getInventoryType()) {
 
             case SELECTOR: return new SelectorMenu(instance, settings);
             case MAIN: return new MainMenu(instance, settings);
@@ -231,28 +215,6 @@ public class GuiConfigRegistrar {
 
     }
 
-    /**
-     * Check if the custom inventory is mandatory
-     * @param keyIdentifier The key identifier of the custom inventory
-     * @return If the custom inventory is mandatory
-     */
-    public boolean isMandatory(String keyIdentifier) {
-        return mandatoryInventories.contains(keyIdentifier);
-    }
-
-    /**
-     * Check if the custom inventory is completed
-     * @param keyIdentifier The key identifier of the custom inventory
-     * @param uuid The player UUID
-     * @return If the custom inventory is completed
-     */
-    public boolean isCompleted(String keyIdentifier, UUID uuid) {
-        return playerInventories
-                .get(uuid)
-                .get(keyIdentifier)
-                .isCompleted(); // Could throw NPE
-    }
-
     @Getter
     @RequiredArgsConstructor
     private enum ConfigField {
@@ -262,9 +224,10 @@ public class GuiConfigRegistrar {
         MIN("min"),
         MAX("max"),
         BASE("base"),
-        MANDATORY("mandatory");
+        MANDATORY("mandatory"),
+        DISPLAY_NAME("displayName");
 
-        private final String getField;
+        private final String field;
 
     }
 

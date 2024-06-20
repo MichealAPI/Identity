@@ -19,8 +19,8 @@ public class IdentityCacheHandler {
     private final AsyncDatabase<Identity> identityDatabase;
     private final Map<UUID, Identity> identityMap;
 
-    // This is a setup cache handler which contains the player's identity
-    // after they have joined the server and setup is in progress or completed.
+    // This is a setup cache handler that contains the player's identity
+    // after they have joined the server, and the setup is in progress or completed.
     // This is used to store the player's identity temporarily until they quit the server
     // and their data is saved to the database.
     private final SetupCacheHandler setupCacheHandler;
@@ -77,9 +77,17 @@ public class IdentityCacheHandler {
 
     }
 
+    public CompletableFuture<Boolean> deleteFromDatabase(Identity identity) {
+        return this.identityDatabase.delete(identity); // if present, it will delete the target identity
+    }
 
-    public void dropIdentity(UUID uuid) {
-        this.identityMap.remove(uuid);
+
+    public CompletableFuture<Boolean> dropIdentity(UUID uuid) {
+        Identity databaseFilter = new Identity(uuid);
+        boolean mapRemoveResult = this.identityMap.remove(uuid) != null;
+
+        return deleteFromDatabase(databaseFilter)
+                .thenApply(databaseDeleteResult -> mapRemoveResult && databaseDeleteResult);
     }
 
 

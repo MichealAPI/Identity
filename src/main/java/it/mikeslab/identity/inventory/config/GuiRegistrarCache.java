@@ -11,6 +11,8 @@ public class GuiRegistrarCache {
 
     private final InventoryType inventoryType;
 
+    private final String path; // Inventory's display name, defaults to its keyId
+
     private final ConfigurationSection section;
 
 }

@@ -10,35 +10,61 @@
 # ------------------- donation.mikeslab.it -------------------- #
 #################################################################
 
-sentry:
-  enabled: true
-  dsn: "https://824b6bf15450fd6639da49ad58460e09@o4504045887029248.ingest.us.sentry.io/4507119803039744" # Sentry DSN
+#################################################################
+#                        Documentation                          #
+#                https://identity.mikeslab.it                   #
+#################################################################
+
+# Follow the instructions on the documentation to set up the database
 database:
-  type: SQL # SQL or MONGODB
-  uri: "jdbc:sqlite:{dataFolder}/identity.db"
+  type: JSON # SQL, JSON or MONGODB
+  uri: "{dataFolder}/identity.json"
   password: ""
   username: ""
-  database: widennetwork
-  table: identities
+  database: ""
+  table: ""
 
-anvil-confirm-item-material: "MAP"
-anvil-confirm-item-model-data: 1010
+# Internal placeholders are expressed using angle brackets (<>)
+# Actually available internal placeholders: <message>
+# This chat format supports placeholders from PlaceholderAPI.
+# You can create your own placeholders by setting up custom inventories
+# if you need help, take a look at the documentation: https://identity.mikeslab.it
 
-chat-format: "<symbol> <yellow><age> <gray><firstname> <lastname><blue>: <white><message>"
+# Identity uses MiniMessage color formatting.
+#  Details on its usage can be found at https://docs.advntr.dev/minimessage/format.html
+chat-format: "<gray>%player_name%<blue>: <white><message>"
 
 kick-if-saving-error: true
 
-command-aliases: "identity|id"
-enable-chat-formatter: true
-first-char-uppercase: true
+command-aliases: "identity|id" # Command aliases can be multiple if separated by a pipe
 
-chat-distance: 10 # -1 for unlimited
+enable-chat-formatter: true # If true, the chat format will be applied to the messages
 
+# Only works if 'enable-chat-formatter' is set to true
+chat-distance: -1 # -1 for unlimited (Expressed in blocks)
+
+# ------------------------ Inventory -------------------------- #
+# Selector: The player can select an option
+# Main: The entry point to the other inventories (mandatory), plug-in will not work without it
+# Input: The player can input a value which can be rule-checked and spam-filtered
+# Value: The player can, given a base value, perform config-specified operations on it and then, select the result
+# ------------------------------------------------------------- #
 guis:
-  test:
-    path: inventories/selector.yml
-    type: SELECTOR
-    mandatory: true
+  #test:
+  #  path: inventories/selector.yml
+  #  type: SELECTOR # SELECTOR, MAIN, INPUT, VALUE
+  #  mandatory: true # If true, the player must select an option,
+                     # will not be able to close the inventory until he selects an option
+  #  displayName: "Test Inventory" # This displayName is shown when notifying the
+                                   # player about the missing value for the mandatory inventory
+  # <-- Value Inventory Only -->
+  # base: 1 # The base value for the value inventory
+  # max: 10 # The maximum value the player can select
+  # min: 1 # The minimum value the player can select
+
+  # Other settings can be found in the documentation and
+  # can be applied only inside the specific inventory file
+
   main-test:
     path: inventories/main.yml
     type: MAIN

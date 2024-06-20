@@ -2,8 +2,7 @@ name: Identity
 version: '${project.version}'
 main: it.mikeslab.identity.IdentityPlugin
 api-version: '1.14'
-depend: [LabCommons]
-softdepend: [PlaceholderAPI]
+depend: [LabCommons, PlaceholderAPI]
 
 author: MikesLab
 description: ''

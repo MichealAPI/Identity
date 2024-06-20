@@ -38,13 +38,17 @@ public interface ActionListener extends CustomInventory {
      * @param action the action to inject
      * @param condition the condition to check before executing the action
      */
-    default void injectAction(String prefix, GuiAction action, Supplier<Boolean> condition) {
+    default void injectAction(String prefix, GuiAction action, Supplier<Condition> condition) {
 
          GuiAction mergedAction = new GuiAction((event, args) -> {
 
-             if(condition.get()) {
-                 action.getAction().accept(event, args);
+             if(!condition.get().isValid()) {
+                    condition.get().getErrorMessage().ifPresent(s -> event.getWhoClicked().sendMessage(s));
+                    return;
              }
+
+             action.getAction().accept(event, args);
+
 
          });
 
@@ -58,6 +62,7 @@ public interface ActionListener extends CustomInventory {
      * @param openFallback whether to open the fallback gui after the selection
      */
     default GuiAction handleSelection(Optional<Supplier<String>> value, boolean openFallback, Optional<Supplier<Condition>> condition) {
+        // todo double condition check? Here and in the inject action method
 
         return new GuiAction((event, args) -> {
 

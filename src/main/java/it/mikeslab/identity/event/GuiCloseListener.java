@@ -4,16 +4,22 @@ import it.mikeslab.commons.api.inventory.CustomGui;
 import it.mikeslab.commons.api.inventory.event.GuiCloseEvent;
 import it.mikeslab.commons.api.inventory.event.GuiInteractEvent;
 import it.mikeslab.identity.IdentityPlugin;
+import it.mikeslab.identity.config.ConfigKey;
+import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.CustomInventory;
 import it.mikeslab.identity.inventory.InventoryType;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -38,7 +44,7 @@ public class GuiCloseListener implements Listener {
 
         registrar.fromCustomGuiId(closedGuiId, playerUUID).ifPresent(guiKey -> {
 
-            // Id is an auto-generated value from the gui factory
+            // An 'id' is an auto-generated value from the gui factory
             // GuiKey is a configuration key that is used to identify the gui
 
             CustomInventory targetInventory = registrar
@@ -65,7 +71,7 @@ public class GuiCloseListener implements Listener {
 
                 // do this if it is not opening a custom gui within 2 (//todo 1?) milliseconds
 
-                if (registrar.isMandatory(guiKey) && registrar.isCompleted(guiKey, playerUUID)) return;
+                // todo is mandatory and is completed return check? Is it still useful?
 
                 Bukkit.getScheduler().runTask(
                         instance,
@@ -90,16 +96,21 @@ public class GuiCloseListener implements Listener {
 
         UUID playerUUID = event.getEvent().getPlayer().getUniqueId();
 
-        for(String mandatoryGuiKey : registrar.getMandatoryInventories()) {
+        List<String> missingInventoriesDisplayName = new ArrayList<>();
+
+        for(Map.Entry<String, String> mandatoryGuiEntry : registrar.getMandatoryInventories().entrySet()) {
+
+            String keyId = mandatoryGuiEntry.getKey();
+            String displayName = mandatoryGuiEntry.getValue();
 
             CustomInventory inventory = registrar
                     .getPlayerInventories()
                     .get(playerUUID)
-                    .get(mandatoryGuiKey);
+                    .get(keyId);
 
             if(!inventory.isCompleted()) {
                 isMandatoryFieldMissing = true;
-                break;
+                missingInventoriesDisplayName.add(displayName);
             }
         }
 
@@ -110,13 +121,22 @@ public class GuiCloseListener implements Listener {
             checkOpeningNewCustomGui(player, () -> {
                 Bukkit.getScheduler().runTask(
                         instance,
-                        () -> fallbackGui.show(player)
+                        () -> {
+
+                            player.sendMessage(
+                                    instance.getLanguage()
+                                            .getSerializedString(
+                                                    LanguageKey.MANDATORY_CLOSE_ATTEMPT,
+                                                    Placeholder.unparsed(
+                                                            "missing",
+                                                            String.join(", ", missingInventoriesDisplayName)
+                                                    )
+                                            ));
+
+                            fallbackGui.show(player);
+                        }
                 );
             });
-
-            // todo send message/sound to player notifying that at least one field is missing
-            //      you may want also to add an identifier for the missing field that needs to be
-            //      completed
         }
     }
 
