@@ -28,7 +28,7 @@ import it.mikeslab.identity.handler.AntiSpamImpl;
 import it.mikeslab.identity.handler.IdentityCacheHandler;
 import it.mikeslab.identity.handler.SetupCacheHandler;
 import it.mikeslab.identity.inventory.action.ActionRegistrarImpl;
-import it.mikeslab.identity.inventory.config.ConditionParserImpl;
+import it.mikeslab.identity.inventory.config.condition.ConditionParserImpl;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
 import it.mikeslab.identity.papi.IdentityExpansion;
 import it.mikeslab.identity.pojo.Identity;
