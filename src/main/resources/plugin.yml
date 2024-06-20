@@ -2,10 +2,14 @@ name: Identity
 version: '${project.version}'
 main: it.mikeslab.identity.IdentityPlugin
 api-version: '1.14'
-depend: [LabCommons, PlaceholderAPI]
+depend: [PlaceholderAPI]
 
 author: MikesLab
-description: ''
+description: 'A simple plug-in to fully customize your players identity.'
 prefix: 'Identity'
 
 website: https://mikeslab.it
+
+libraries:
+  - "com.zaxxer:HikariCP:4.0.3"
+  - "org.mongodb:mongodb-driver-sync:5.0.1"

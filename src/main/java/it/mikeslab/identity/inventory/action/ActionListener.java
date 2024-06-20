@@ -97,7 +97,6 @@ public interface ActionListener extends CustomInventory {
 
             if (identity == null) {
                 LoggerUtil.log(
-                        IdentityPlugin.PLUGIN_NAME,
                         Level.WARNING,
                         LoggerUtil.LogSource.UTIL,
                         "Could not find identity for player with UUID: " + playerUUID + " during setup."

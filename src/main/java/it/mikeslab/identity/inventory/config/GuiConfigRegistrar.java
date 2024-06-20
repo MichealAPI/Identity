@@ -112,7 +112,6 @@ public class GuiConfigRegistrar {
 
         if(fallbackGuiIdentifier == null) {
             LoggerUtil.log(
-                    IdentityPlugin.PLUGIN_NAME,
                     Level.SEVERE,
                     LoggerUtil.LogSource.CONFIG,
                     "No main menu found in the configuration"
@@ -150,7 +149,6 @@ public class GuiConfigRegistrar {
 
         if(mandatory && type == InventoryType.MAIN) {
             LoggerUtil.log(
-                    IdentityPlugin.PLUGIN_NAME,
                     Level.WARNING,
                     LoggerUtil.LogSource.CONFIG,
                     "Inventory '" + inventoryKeyId + "' is marked as mandatory but is a main menu"
@@ -163,7 +161,6 @@ public class GuiConfigRegistrar {
 
     private void logMissingRequiredField() {
         LoggerUtil.log(
-                IdentityPlugin.PLUGIN_NAME,
                 Level.WARNING,
                 LoggerUtil.LogSource.CONFIG,
                 "Inventory '" + inventoryKeyId + "' is missing a required field (Required fields:"
@@ -195,7 +192,6 @@ public class GuiConfigRegistrar {
         if(!configFile.exists()) {
             LoggerUtil
                     .log(
-                            IdentityPlugin.PLUGIN_NAME,
                             Level.WARNING,
                             LoggerUtil.LogSource.CONFIG,
                             "File at '" + configFile.getAbsolutePath() + "' does not exist"

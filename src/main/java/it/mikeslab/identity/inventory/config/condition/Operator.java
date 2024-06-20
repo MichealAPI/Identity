@@ -8,13 +8,13 @@ import java.util.function.BiFunction;
 @Getter
 @RequiredArgsConstructor
 public enum Operator {
-    EQUAL("==", (a, b) -> a == b),
-    NOT_EQUAL("!=", (a, b) -> a != b),
+    EQUAL("==", Double::equals),
+    NOT_EQUAL("!=", (a, b) -> !a.equals(b)),
     GREATER(">", (a, b) -> a > b),
     LESS("<", (a, b) -> a < b),
     GREATER_EQUAL(">=", (a, b) -> a >= b),
     LESS_EQUAL("<=", (a, b) -> a <= b),
-    MODULO("%", (a, b) -> a == b); // Where 'a' is the result of 'a' modulo 'b' and 'b' is the third operand
+    MODULO("%", null); // Where 'a' is the result of 'a' modulo 'b' and 'b' is the third operand
 
     private final String symbol;
     private final BiFunction<Double, Double, Boolean> operation;
@@ -45,7 +45,7 @@ public enum Operator {
 
         if(this == MODULO) {
             double operand3 = operands[2].asDouble();
-            return operation.apply(operand1 % operand2, operand3);
+            return EQUAL.getOperation().apply(operand1 % operand2, operand3);
         }
 
         return operation.apply(operand1, operand2);

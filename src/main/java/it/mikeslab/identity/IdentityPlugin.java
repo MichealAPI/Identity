@@ -47,8 +47,6 @@ import java.util.logging.Level;
 @Getter
 public final class IdentityPlugin extends JavaPlugin {
 
-    public static final String PLUGIN_NAME = "Identity";
-
     private AsyncDatabase<Identity> identityDatabase;
     private GuiFactory guiFactory;
     private GuiListener guiListener;
@@ -78,27 +76,26 @@ public final class IdentityPlugin extends JavaPlugin {
     public void onEnable() {
 
         // Get the API plug-in instance
-        this.labCommons = (LabCommons) getServer()
-                .getPluginManager()
-                .getPlugin("LabCommons");
+        this.labCommons = new LabCommons();
+        this.labCommons.initialize(this);
 
         this.audiences = BukkitAudiences.create(this);
 
         this.initConfig();
+
+        this.setMongoLoggingToInfo();
 
         FormatUtil.printStartupInfos(this, audiences, "9C00FF");
 
         initDatabase().thenAccept(isConnected -> {
             if(isConnected) {
                 LoggerUtil.log(
-                        PLUGIN_NAME,
                         Level.INFO,
                         LoggerUtil.LogSource.DATABASE,
                         "Connected to database."
                 );
             } else {
                 LoggerUtil.log(
-                        PLUGIN_NAME,
                         Level.WARNING,
                         LoggerUtil.LogSource.DATABASE,
                         "Failed to connect to database."
@@ -124,6 +121,8 @@ public final class IdentityPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
 
+        this.labCommons.disable();
+
         // Prevent memory leaks
 
         // Disconnects from the database
@@ -131,14 +130,12 @@ public final class IdentityPlugin extends JavaPlugin {
                 isDisconnected -> {
                     if(isDisconnected) {
                         LoggerUtil.log(
-                                PLUGIN_NAME,
                                 Level.INFO,
                                 LoggerUtil.LogSource.DATABASE,
                                 "Disconnected from database."
                         );
                     } else {
                         LoggerUtil.log(
-                                PLUGIN_NAME,
                                 Level.WARNING,
                                 LoggerUtil.LogSource.DATABASE,
                                 "Failed to disconnect from database."
@@ -222,9 +219,9 @@ public final class IdentityPlugin extends JavaPlugin {
 
         File antiSpamConfigFile = new File(getDataFolder(), "antispam.yml");
 
-        saveResource(languageConfigFile.getName(), false);
-        saveResource(configFile.getName(), false);
-        saveResource(antiSpamConfigFile.getName(), false);
+        save(languageConfigFile.getName(), false);
+        save(configFile.getName(), false);
+        save(antiSpamConfigFile.getName(), false);
 
         this.language = Configurable
                 .newInstance()
@@ -239,6 +236,11 @@ public final class IdentityPlugin extends JavaPlugin {
                 .loadConfiguration(antiSpamConfigFile);
     }
 
+    private void save(String resource, boolean replace) {
+        if(!new File(getDataFolder(), resource).exists() || replace) {
+            saveResource(resource, replace);
+        }
+    }
 
     private void initListeners() {
         this.getServer().getPluginManager().registerEvents(
@@ -300,6 +302,15 @@ public final class IdentityPlugin extends JavaPlugin {
 
         }
 
+    }
+
+    /**
+     * Set the mongo logging level to >WARN if the configuration is set to false
+     */
+    private void setMongoLoggingToInfo() {
+        if(!this.getCustomConfig().getBoolean(ConfigKey.MONGO_LOGGING)) {
+            LabCommons.disableMongoInfoLogging();
+        }
     }
 
 

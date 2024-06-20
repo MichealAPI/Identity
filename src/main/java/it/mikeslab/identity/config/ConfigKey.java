@@ -15,7 +15,9 @@ public enum ConfigKey implements ConfigurableEnum {
 
     KICK_IF_SAVING_ERROR("kick-if-saving-error", true),
 
-    CHAT_DISTANCE("chat-distance", -1);
+    CHAT_DISTANCE("chat-distance", -1),
+
+    MONGO_LOGGING("mongo-info-logging", false);
 
     private final String path;
     private final Object defaultValue;
