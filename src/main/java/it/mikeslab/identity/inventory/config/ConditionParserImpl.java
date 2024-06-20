@@ -37,26 +37,14 @@ public class ConditionParserImpl implements ConditionParser {
                 .replace(" ", "");
 
         if(s.contains("||")) {
-            String[] orConditions = s.split("\\|\\|");
-            for (String condition : orConditions) {
-                if (isConditionValid(condition) && parseCondition(condition)) {
-                    return true;
-                }
-            }
-            return false;
-
+            this.or(s);
         } else if(s.contains("&&")) {
-            String[] andConditions = s.split("&&");
-            for (String condition : andConditions) {
-                if (!isConditionValid(condition) || !parseCondition(condition)) {
-                    return false;
-                }
-            }
-            return true;
-
+            this.and(s);
         } else {
             return isConditionValid(s) && parseCondition(s);
         }
+
+        return false;
     }
 
     private boolean parseCondition(String s) {
@@ -120,6 +108,29 @@ public class ConditionParserImpl implements ConditionParser {
         } else {
             return false;
         }
+    }
+
+
+    private boolean or(String conditionAsString) {
+        String[] orConditions = conditionAsString.split("\\|\\|");
+
+        for (String condition : orConditions) {
+            if (isConditionValid(condition) && parseCondition(condition)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    private boolean and(String conditionAsString) {
+        String[] andConditions = conditionAsString.split("&&");
+        for (String condition : andConditions) {
+            if (!isConditionValid(condition) || !parseCondition(condition)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
