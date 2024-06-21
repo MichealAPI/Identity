@@ -220,8 +220,6 @@ public class GuiConfigRegistrar {
             case VALUE: return new ValueMenu(instance, settings, new ValueMenuContext(baseValue, max, min));
             case INPUT: return new InputMenu(instance, settings);
 
-            // break;
-
             default: return null;
 
             // todo other cases

@@ -3,6 +3,7 @@ package it.mikeslab.identity.inventory.impl.template;
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
 import it.mikeslab.commons.api.inventory.config.GuiConfigImpl;
 import it.mikeslab.identity.IdentityPlugin;
+import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.inventory.CustomInventory;
 import it.mikeslab.identity.inventory.CustomInventoryContext;
 import it.mikeslab.identity.inventory.pojo.InventoryContext;
@@ -21,6 +22,14 @@ public abstract class GuiTemplate implements CustomInventory {
         this.autowire(instance, settings);
 
         this.generate();
+
+        // Setting up for animations
+        getCustomContext()
+                .getInventoryContext()
+                .getDefaultGuiDetails()
+                .setAnimationInterval(
+                        instance.getCustomConfig().getInt(ConfigKey.ANIMATION_INTERVAL)
+                );
     }
 
     /**
@@ -34,7 +43,7 @@ public abstract class GuiTemplate implements CustomInventory {
         GuiConfig guiConfig;
 
         // Check if the guiConfig is cached, this
-        // allows to prevent loading the same config multiple times
+        // allows preventing loading the same config multiple times
         if (this.getInstance().getCachedGuiConfig().containsKey(fileName)) {
 
             guiConfig = this.getInstance().getCachedGuiConfig().get(fileName);

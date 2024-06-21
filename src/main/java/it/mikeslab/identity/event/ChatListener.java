@@ -48,7 +48,6 @@ public class ChatListener implements Listener {
                     )
             );
 
-
         });
 
         int chatDistance = instance.getCustomConfig().getInt(ConfigKey.CHAT_DISTANCE);

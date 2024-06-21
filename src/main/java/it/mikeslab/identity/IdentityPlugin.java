@@ -28,10 +28,11 @@ import it.mikeslab.identity.handler.AntiSpamImpl;
 import it.mikeslab.identity.handler.IdentityCacheHandler;
 import it.mikeslab.identity.handler.SetupCacheHandler;
 import it.mikeslab.identity.inventory.action.ActionRegistrarImpl;
-import it.mikeslab.identity.inventory.config.condition.ConditionParserImpl;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
+import it.mikeslab.identity.inventory.config.condition.ConditionParserImpl;
 import it.mikeslab.identity.papi.IdentityExpansion;
 import it.mikeslab.identity.pojo.Identity;
+import it.mikeslab.identity.preset.PresetsManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -77,6 +78,7 @@ public final class IdentityPlugin extends JavaPlugin {
 
         // Get the API plug-in instance
         this.labCommons = new LabCommons();
+
         this.labCommons.initialize(this);
 
         this.audiences = BukkitAudiences.create(this);
@@ -234,6 +236,10 @@ public final class IdentityPlugin extends JavaPlugin {
         this.antiSpamConfig = Configurable
                 .newInstance()
                 .loadConfiguration(antiSpamConfigFile);
+
+
+        new PresetsManager(this).loadPresets();
+
     }
 
     private void save(String resource, boolean replace) {

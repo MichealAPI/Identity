@@ -55,7 +55,6 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
                 this.handleSelection(valueSupplier, true, Optional.empty())
         );
 
-
     }
 
 

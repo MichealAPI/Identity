@@ -2,12 +2,14 @@ package it.mikeslab.identity.inventory.action;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import it.mikeslab.commons.api.component.ComponentsUtil;
 import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
 import it.mikeslab.commons.api.inventory.util.action.ActionRegistrar;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.CustomInventory;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,6 +31,8 @@ public class ActionRegistrarImpl implements ActionRegistrar {
         actionsMap.put("player", executeCommandForPlayer());
         actionsMap.put("console", executeCommandForConsole());
         actionsMap.put("title", sendTitleToPlayer());
+        actionsMap.put("sound", playSoundForPlayer());
+        actionsMap.put("close", closeInventory());
 
         return actionsMap;
 
@@ -38,7 +42,7 @@ public class ActionRegistrarImpl implements ActionRegistrar {
         return new GuiAction((event, args) -> {
 
             Player player = event.getWhoClicked();
-            player.sendMessage(args);
+            player.sendMessage(ComponentsUtil.getSerializedComponent(args));
         });
     }
 
@@ -66,7 +70,13 @@ public class ActionRegistrarImpl implements ActionRegistrar {
 
             Player player = event.getWhoClicked();
             String[] split = args.split(";");
-            player.sendTitle(split[0], split[1], 10, 70, 20);
+            player.sendTitle(
+                    ComponentsUtil.getSerializedComponent(split[0]),
+                    ComponentsUtil.getSerializedComponent(split[1]),
+                    10,
+                    70,
+                    20
+            );
 
         });
     }
@@ -94,6 +104,24 @@ public class ActionRegistrarImpl implements ActionRegistrar {
                 });
     }
 
+    private GuiAction playSoundForPlayer() {
+        return new GuiAction((ev, args) -> {
 
+            Player target = ev.getWhoClicked();
+            Location location = target.getLocation();
+
+            target.playSound(location, args, 1, 1);
+
+        });
+    }
+
+    private GuiAction closeInventory() {
+        return new GuiAction((ev, args) -> {
+
+            Player target = ev.getWhoClicked();
+            target.closeInventory();
+
+        });
+    }
 
 }

@@ -70,7 +70,7 @@ public class IdentityCacheHandler {
 
     public CompletableFuture<Identity> loadIdentity(UUID uuid) {
 
-        Identity identityFilter = new Identity(); // todo new Identity(targetUUID);
+        Identity identityFilter = new Identity(); // todo new Identity(targetUUID);, but it requires values to be null!
         identityFilter.setUuid(uuid);
 
         return this.identityDatabase.findOne(identityFilter);

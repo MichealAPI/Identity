@@ -2,6 +2,7 @@ package it.mikeslab.identity.inventory.impl;
 
 import it.mikeslab.commons.api.inventory.event.GuiInteractEvent;
 import it.mikeslab.identity.IdentityPlugin;
+import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.CustomInventoryContext;
 import it.mikeslab.identity.inventory.action.ActionListener;
@@ -14,6 +15,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -102,7 +104,7 @@ public class InputMenu implements ActionListener {
 
         GuiInteractEvent event = new GuiInteractEvent(
                 player,
-                context.getClickableElement()
+                Collections.singletonList(context.getClickableElement())
         );
 
         this.handleSelection(Optional.of(() -> input), true, Optional.of(condition))

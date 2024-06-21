@@ -17,7 +17,11 @@ public enum ConfigKey implements ConfigurableEnum {
 
     CHAT_DISTANCE("chat-distance", -1),
 
-    MONGO_LOGGING("mongo-info-logging", false);
+    MONGO_LOGGING("settings.mongo-info-logging", false),
+
+    EXTRACT_DEFAULTS("settings.extract-defaults", true),
+
+    ANIMATION_INTERVAL("settings.animation-interval", 2);
 
     private final String path;
     private final Object defaultValue;
