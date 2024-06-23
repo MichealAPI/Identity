@@ -48,7 +48,7 @@ public class PresetsManager {
         ConfigurationSection settingSection = instance
                 .getCustomConfig()
                 .getConfiguration()
-                .createSection("settings");
+                .getConfigurationSection("settings");
 
         settingSection.set("extract-defaults", false);
 

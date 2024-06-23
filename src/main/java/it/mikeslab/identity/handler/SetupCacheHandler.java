@@ -1,7 +1,10 @@
 package it.mikeslab.identity.handler;
 
+import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.pojo.Identity;
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +16,24 @@ public class SetupCacheHandler {
 
     /**
      * Initialize the setup for the player
-     * @param uuid the player's UUID
+     * @param instance the IdentityPlugin instance
+     * @param target the player to set up
      */
-    public void initSetup(UUID uuid) {
+    public void initSetup(IdentityPlugin instance, Player target) {
 
-        Identity identity = new Identity(uuid);
+        UUID targetUUID = target.getUniqueId();
 
-        identityMap.put(uuid, identity);
+        Bukkit.getScheduler().runTaskLater(instance, () -> {
+                    instance.getGuiConfigRegistrar()
+                            .getPlayerInventories()
+                            .get(targetUUID)
+                            .get(instance.getGuiConfigRegistrar().getFallbackGuiIdentifier())
+                            .show(target);
+                }, 1L);
+
+        Identity identity = new Identity(targetUUID);
+
+        identityMap.put(targetUUID, identity);
 
     }
 

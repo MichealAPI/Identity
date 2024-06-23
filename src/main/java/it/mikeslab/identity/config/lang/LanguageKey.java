@@ -23,7 +23,9 @@ public enum LanguageKey implements ConfigurableEnum {
    INPUT_TOO_FEW_WORDS("input-too-few-words", "Input too few words. Min words: <min>"),
    VALUE_OUT_OF_RANGE("value-out-of-range", "Value out of range. Min: <min>, Max: <max>"),
    INPUT_SPAM("input-spam", "Spam detected"),
-   MANDATORY_CLOSE_ATTEMPT("mandatory-close-attempt", "These inventories are mandatory to be completed: <missing>");
+   MANDATORY_CLOSE_ATTEMPT("mandatory-close-attempt", "These inventories are mandatory to be completed: <missing>"),
+   IDENTITY_ALREADY_SET("identity-already-set", "Identity already set"),
+   IDENTITY_SETUP_START("identity-setup-start", "Identity setup started"),;
 
 
    private final String path;

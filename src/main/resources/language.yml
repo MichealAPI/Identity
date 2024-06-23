@@ -27,3 +27,6 @@ input-too-many-words: "Input too many words. Max words: <max>"
 input-too-few-words: "Input too few words. Min words: <min>"
 value-out-of-range: "Value out of range. Min: <min>, Max: <max>"
 input-spam: "Spam detected"
+identity-already-set: "Your identity already set"
+identity-setup-start: "Identity setup started"
+

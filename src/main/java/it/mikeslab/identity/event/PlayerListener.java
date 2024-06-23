@@ -1,6 +1,7 @@
 package it.mikeslab.identity.event;
 
 import it.mikeslab.identity.IdentityPlugin;
+import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.handler.IdentityCacheHandler;
 import it.mikeslab.identity.pojo.Identity;
 import lombok.Getter;
@@ -38,14 +39,12 @@ public class PlayerListener implements Listener {
 
             if(!isFound) {
 
-                Bukkit.getScheduler().runTaskLater(
-                        instance,
-                        () -> openIdentityInventory(player),
-                        1L
-                );
+                if(!instance.getCustomConfig().getBoolean(ConfigKey.ON_JOIN_SETUP)) return;
 
-                instance.getSetupCacheHandler()
-                        .initSetup(playerUUID);
+                instance.getSetupCacheHandler().initSetup(
+                                instance,
+                                player
+                        );
 
             }
 
@@ -79,18 +78,6 @@ public class PlayerListener implements Listener {
 
     }
 
-
-    private void openIdentityInventory(Player target) {
-
-        UUID targetUUID = target.getUniqueId();
-
-        // todo implement delay
-        instance.getGuiConfigRegistrar()
-                .getPlayerInventories()
-                .get(targetUUID)
-                .get(instance.getGuiConfigRegistrar().getFallbackGuiIdentifier())
-                .show(target);
-    }
 
 
 

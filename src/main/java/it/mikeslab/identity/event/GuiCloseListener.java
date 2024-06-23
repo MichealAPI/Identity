@@ -9,6 +9,7 @@ import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.CustomInventory;
 import it.mikeslab.identity.inventory.InventoryType;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
+import it.mikeslab.identity.util.InventoryMap;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -17,10 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 @RequiredArgsConstructor
@@ -156,7 +154,6 @@ public class GuiCloseListener implements Listener {
 
 
                 }, 1L);
-
 
     }
 

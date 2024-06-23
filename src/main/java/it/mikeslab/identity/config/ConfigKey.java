@@ -21,7 +21,9 @@ public enum ConfigKey implements ConfigurableEnum {
 
     EXTRACT_DEFAULTS("settings.extract-defaults", true),
 
-    ANIMATION_INTERVAL("settings.animation-interval", 2);
+    ANIMATION_INTERVAL("settings.animation-interval", 2),
+
+    ON_JOIN_SETUP("settings.on-join-setup", true),;
 
     private final String path;
     private final Object defaultValue;

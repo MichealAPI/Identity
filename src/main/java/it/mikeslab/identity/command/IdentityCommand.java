@@ -34,6 +34,33 @@ public class IdentityCommand extends BaseCommand {
         FormatUtil.sendRunningInfos(audiences.sender(sender), instance, "9C00FF");
     }
 
+    @Subcommand("setup")
+    @Description("Starts the identity setup process")
+    @CommandPermission(Permission.IDENTITY_SETUP)
+    @Syntax("(target)")
+    public void startSetup(Player sender) {
+
+            UUID playerUUID = sender.getUniqueId();
+
+            instance.getIdentityCacheHandler().getCachedIdentity(playerUUID).thenAcceptAsync(
+                    identityOptional -> {
+
+                        if(identityOptional.isPresent()) {
+                            audiences.sender(sender).sendMessage(
+                                    instance.getLanguage().getComponent(LanguageKey.IDENTITY_ALREADY_SET)
+                            );
+                        } else {
+                            audiences.sender(sender).sendMessage(
+                                    instance.getLanguage().getComponent(LanguageKey.IDENTITY_SETUP_START)
+                            );
+
+                            instance.getSetupCacheHandler().initSetup(instance, sender);
+                        }
+
+                    }
+            );
+    }
+
 
     @Subcommand("reset")
     @Description("Reset the identity of a player")

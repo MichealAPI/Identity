@@ -7,6 +7,7 @@ import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.pojo.InventoryContext;
 import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import java.nio.file.Path;
 import java.util.Map;

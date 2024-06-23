@@ -20,6 +20,7 @@ settings:
   mongo-info-logging: false # Sets the logging level to >WARNING for MongoDB operations
   extract-defaults: true # Extracts default files to the plugin folder
   animation-interval: 2 # The interval in ticks between each animation frame
+  on-join-setup: true # If true, the player will be prompted to set up his identity on join
 
 # Follow the instructions on the documentation to set up the database
 database:
