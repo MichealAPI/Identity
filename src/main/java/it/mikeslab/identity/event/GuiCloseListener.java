@@ -2,14 +2,12 @@ package it.mikeslab.identity.event;
 
 import it.mikeslab.commons.api.inventory.CustomGui;
 import it.mikeslab.commons.api.inventory.event.GuiCloseEvent;
-import it.mikeslab.commons.api.inventory.event.GuiInteractEvent;
+import it.mikeslab.commons.api.inventory.util.CustomInventory;
+import it.mikeslab.commons.api.inventory.util.InventoryType;
 import it.mikeslab.identity.IdentityPlugin;
-import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.config.lang.LanguageKey;
-import it.mikeslab.identity.inventory.CustomInventory;
-import it.mikeslab.identity.inventory.InventoryType;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
-import it.mikeslab.identity.util.InventoryMap;
+import it.mikeslab.identity.pojo.Identity;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
@@ -18,8 +16,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class GuiCloseListener implements Listener {
@@ -96,17 +96,14 @@ public class GuiCloseListener implements Listener {
 
         List<String> missingInventoriesDisplayName = new ArrayList<>();
 
+        Identity setupIdentity = instance.getSetupCacheHandler().getIdentity(playerUUID);
+
         for(Map.Entry<String, String> mandatoryGuiEntry : registrar.getMandatoryInventories().entrySet()) {
 
             String keyId = mandatoryGuiEntry.getKey();
             String displayName = mandatoryGuiEntry.getValue();
 
-            CustomInventory inventory = registrar
-                    .getPlayerInventories()
-                    .get(playerUUID)
-                    .get(keyId);
-
-            if(!inventory.isCompleted()) {
+            if(!setupIdentity.getValues().containsKey(keyId)) {
                 isMandatoryFieldMissing = true;
                 missingInventoriesDisplayName.add(displayName);
             }
@@ -146,7 +143,10 @@ public class GuiCloseListener implements Listener {
 
                     Inventory topInventory = player.getOpenInventory().getTopInventory();
 
-                    boolean isCustomGui = topInventory.getHolder() instanceof CustomGui;
+                    boolean isCustomGui = this.instance.getGuiFactory().getCustomInventory(
+                            player.getUniqueId(),
+                            topInventory) != null;
+
                     boolean isAnvil = topInventory.getType() == org.bukkit.event.inventory.InventoryType.ANVIL;
 
                     if(!isAnvil && !isCustomGui)

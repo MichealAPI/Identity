@@ -25,7 +25,8 @@ public enum LanguageKey implements ConfigurableEnum {
    INPUT_SPAM("input-spam", "Spam detected"),
    MANDATORY_CLOSE_ATTEMPT("mandatory-close-attempt", "These inventories are mandatory to be completed: <missing>"),
    IDENTITY_ALREADY_SET("identity-already-set", "Identity already set"),
-   IDENTITY_SETUP_START("identity-setup-start", "Identity setup started"),;
+   IDENTITY_SETUP_START("identity-setup-start", "Identity setup started"),
+   UNSET_VALUE("unset-value", "Unset value"),;
 
 
    private final String path;

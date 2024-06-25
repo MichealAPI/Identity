@@ -41,10 +41,10 @@
             </goals>
             <configuration>
                 <relocations>
-                    <relocation>
+<!--                    <relocation>
                         <pattern>it.mikeslab.commons</pattern>
                         <shadedPattern>it.mikeslab.identity.api.commons</shadedPattern>
-                    </relocation>
+                    </relocation> -->
 
                     <relocation>
                         <pattern>net.wesjd.anvilgui</pattern>
@@ -126,7 +126,8 @@
       <dependency>
           <groupId>com.github.MichealAPI</groupId>
           <artifactId>LabCommons</artifactId>
-          <version>462dc72c40</version>
+          <version>b440c66d31</version>
+          <scope>provided</scope>
       </dependency>
 
       <dependency>
@@ -160,12 +161,6 @@
           <artifactId>adventure-text-minimessage</artifactId>
           <version>4.17.0</version>
           <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-          <groupId>com.github.cryptomorin</groupId>
-          <artifactId>XSeries</artifactId>
-          <version>11.1.0</version>
       </dependency>
 
   </dependencies>

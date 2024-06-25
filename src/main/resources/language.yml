@@ -30,3 +30,5 @@ input-spam: "Spam detected"
 identity-already-set: "Your identity already set"
 identity-setup-start: "Identity setup started"
 
+unset-value: "Unset value"
+

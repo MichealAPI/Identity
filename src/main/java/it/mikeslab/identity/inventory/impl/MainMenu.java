@@ -1,8 +1,8 @@
 package it.mikeslab.identity.inventory.impl;
 
+import it.mikeslab.commons.api.inventory.util.InventorySettings;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.impl.template.GuiTemplate;
-import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import lombok.Getter;
 import lombok.Setter;
 

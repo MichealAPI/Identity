@@ -2,12 +2,12 @@ package it.mikeslab.identity.inventory.impl.template;
 
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
 import it.mikeslab.commons.api.inventory.config.GuiConfigImpl;
+import it.mikeslab.commons.api.inventory.util.CustomInventory;
+import it.mikeslab.commons.api.inventory.util.CustomInventoryContext;
+import it.mikeslab.commons.api.inventory.util.InventoryContext;
+import it.mikeslab.commons.api.inventory.util.InventorySettings;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.ConfigKey;
-import it.mikeslab.identity.inventory.CustomInventory;
-import it.mikeslab.identity.inventory.CustomInventoryContext;
-import it.mikeslab.identity.inventory.pojo.InventoryContext;
-import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import lombok.Data;
 
 import java.io.File;
@@ -17,14 +17,17 @@ import java.util.Optional;
 public abstract class GuiTemplate implements CustomInventory {
 
     private CustomInventoryContext customContext;
+    private IdentityPlugin instance;
 
     public GuiTemplate(final IdentityPlugin instance, InventorySettings settings) {
+        this.instance = instance;
+
         this.autowire(instance, settings);
 
         this.generate();
 
         // Setting up for animations
-        getCustomContext()
+        customContext
                 .getInventoryContext()
                 .getDefaultGuiDetails()
                 .setAnimationInterval(
@@ -82,9 +85,10 @@ public abstract class GuiTemplate implements CustomInventory {
      */
     private void autowire(final IdentityPlugin instance, final InventorySettings settings) {
 
-        this.setCustomContext(new CustomInventoryContext());
+        CustomInventoryContext context = new CustomInventoryContext(instance, settings);
+        context.setGuiFactory(instance.getGuiFactory());
 
-        this.setSettings(settings);
+        this.setCustomContext(context);
 
         this.setInstance(instance);
 

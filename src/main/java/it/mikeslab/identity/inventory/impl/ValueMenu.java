@@ -2,13 +2,13 @@ package it.mikeslab.identity.inventory.impl;
 
 import it.mikeslab.commons.api.inventory.pojo.GuiDetails;
 import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
+import it.mikeslab.commons.api.inventory.util.InventorySettings;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.lang.LanguageKey;
-import it.mikeslab.identity.inventory.pojo.ValueMenuContext;
 import it.mikeslab.identity.inventory.action.ActionListener;
 import it.mikeslab.identity.inventory.impl.template.GuiTemplate;
+import it.mikeslab.identity.inventory.pojo.ValueMenuContext;
 import it.mikeslab.identity.pojo.Condition;
-import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -49,10 +49,16 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
 
         Optional<Supplier<String>> valueSupplier = Optional.of(() -> String.valueOf(this.getValue()));
 
-        this.injectAction("value", this.applyMathOperation());
+        this.injectAction(instance, "value", this.applyMathOperation());
         this.injectAction(
+                instance,
                 "select",
-                this.handleSelection(valueSupplier, true, Optional.empty())
+                this.handleSelection(
+                        instance,
+                        valueSupplier,
+                        true,
+                        Optional.empty()
+                )
         );
 
     }

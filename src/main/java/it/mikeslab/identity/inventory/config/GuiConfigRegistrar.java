@@ -1,16 +1,16 @@
 package it.mikeslab.identity.inventory.config;
 
+import it.mikeslab.commons.api.inventory.util.CustomInventory;
+import it.mikeslab.commons.api.inventory.util.InventorySettings;
+import it.mikeslab.commons.api.inventory.util.InventoryType;
 import it.mikeslab.commons.api.logger.LoggerUtil;
 import it.mikeslab.identity.IdentityPlugin;
-import it.mikeslab.identity.inventory.CustomInventory;
-import it.mikeslab.identity.inventory.InventoryType;
-import it.mikeslab.identity.inventory.pojo.ValueMenuContext;
 import it.mikeslab.identity.inventory.impl.InputMenu;
 import it.mikeslab.identity.inventory.impl.MainMenu;
 import it.mikeslab.identity.inventory.impl.SelectorMenu;
 import it.mikeslab.identity.inventory.impl.ValueMenu;
-import it.mikeslab.identity.inventory.pojo.InventorySettings;
-import it.mikeslab.identity.util.InventoryMap;
+import it.mikeslab.identity.inventory.pojo.ValueMenuContext;
+import it.mikeslab.identity.util.SetupMap;
 import it.mikeslab.identity.util.inventory.input.InputMenuLoader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,10 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class GuiConfigRegistrar {
@@ -31,7 +34,7 @@ public class GuiConfigRegistrar {
     private String fallbackGuiIdentifier;
 
     @Getter
-    private final InventoryMap playerInventories;
+    private final SetupMap playerInventories;
 
     private final Map<String, GuiRegistrarCache> cache = new HashMap<>();
 
@@ -51,7 +54,7 @@ public class GuiConfigRegistrar {
         this.instance = instance;
         this.section = section;
 
-        this.playerInventories = new InventoryMap(instance);
+        this.playerInventories = new SetupMap(instance);
 
         this.inputMenuLoader = new InputMenuLoader(instance);
     }

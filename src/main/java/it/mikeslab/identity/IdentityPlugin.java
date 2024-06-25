@@ -14,6 +14,7 @@ import it.mikeslab.commons.api.inventory.config.ConditionParser;
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
 import it.mikeslab.commons.api.inventory.event.GuiListener;
 import it.mikeslab.commons.api.inventory.factory.GuiFactoryImpl;
+import it.mikeslab.commons.api.inventory.util.InventoryMap;
 import it.mikeslab.commons.api.inventory.util.action.ActionHandler;
 import it.mikeslab.commons.api.inventory.util.action.ActionHandlerImpl;
 import it.mikeslab.commons.api.inventory.util.action.ActionRegistrar;
@@ -77,7 +78,11 @@ public final class IdentityPlugin extends JavaPlugin {
     public void onEnable() {
 
         // Get the API plug-in instance
-        this.labCommons = new LabCommons();
+        // this.labCommons = new LabCommons();
+
+        this.labCommons = (LabCommons) this.getServer()
+                .getPluginManager()
+                .getPlugin("LabCommons");
 
         this.labCommons.initialize(this);
 
@@ -176,6 +181,7 @@ public final class IdentityPlugin extends JavaPlugin {
 
         this.guiFactory.setActionHandler(actionHandler);
         this.guiFactory.setConditionParser(conditionParser);
+        this.guiFactory.setInventoryMap(() -> this.guiConfigRegistrar.getPlayerInventories());
 
     }
 

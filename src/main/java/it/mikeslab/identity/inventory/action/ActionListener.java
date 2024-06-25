@@ -1,9 +1,9 @@
 package it.mikeslab.identity.inventory.action;
 
 import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
+import it.mikeslab.commons.api.inventory.util.CustomInventory;
 import it.mikeslab.commons.api.logger.LoggerUtil;
 import it.mikeslab.identity.IdentityPlugin;
-import it.mikeslab.identity.inventory.CustomInventory;
 import it.mikeslab.identity.pojo.Condition;
 import it.mikeslab.identity.pojo.Identity;
 import org.bukkit.Bukkit;
@@ -22,9 +22,9 @@ public interface ActionListener extends CustomInventory {
      * @param prefix the prefix of the action
      * @param action the action to inject
      */
-     default void injectAction(String prefix, GuiAction action) {
+     default void injectAction(IdentityPlugin instance, String prefix, GuiAction action) {
 
-        this.getInstance().getActionHandler().injectAction(
+        instance.getActionHandler().injectAction(
                 this.getId(),
                 prefix,
                 action
@@ -38,7 +38,7 @@ public interface ActionListener extends CustomInventory {
      * @param action the action to inject
      * @param condition the condition to check before executing the action
      */
-    default void injectAction(String prefix, GuiAction action, Supplier<Condition> condition) {
+    default void injectAction(IdentityPlugin instance, String prefix, GuiAction action, Supplier<Condition> condition) {
 
          GuiAction mergedAction = new GuiAction((event, args) -> {
 
@@ -52,7 +52,7 @@ public interface ActionListener extends CustomInventory {
 
          });
 
-         this.injectAction(prefix, mergedAction);
+         this.injectAction(instance, prefix, mergedAction);
 
     }
 
@@ -61,7 +61,7 @@ public interface ActionListener extends CustomInventory {
      * @param value the value to set, if present. Defaults to args
      * @param openFallback whether to open the fallback gui after the selection
      */
-    default GuiAction handleSelection(Optional<Supplier<String>> value, boolean openFallback, Optional<Supplier<Condition>> condition) {
+    default GuiAction handleSelection(IdentityPlugin instance, Optional<Supplier<String>> value, boolean openFallback, Optional<Supplier<Condition>> condition) {
         // todo double condition check? Here and in the inject action method
 
         return new GuiAction((event, args) -> {
@@ -90,8 +90,7 @@ public interface ActionListener extends CustomInventory {
             Player player = event.getWhoClicked();
             UUID playerUUID = player.getUniqueId();
 
-            Identity identity = this
-                    .getInstance()
+            Identity identity = instance
                     .getSetupCacheHandler()
                     .getIdentity(playerUUID);
 
@@ -105,7 +104,7 @@ public interface ActionListener extends CustomInventory {
             }
 
             // Update the identity
-            this.getInstance().getSetupCacheHandler().updateIdentity(
+            instance.getSetupCacheHandler().updateIdentity(
                     playerUUID,
                     new AbstractMap.SimpleEntry<>(
                             this.getCustomContext().getSettings().getFieldIdentifier(),
@@ -116,8 +115,14 @@ public interface ActionListener extends CustomInventory {
             // Set the completed flag
             this.setCompleted(true);
 
+            // This force-regen inventories that may contain placeholder value
+            // that request the value of the field that has just been set
+            instance.getGuiConfigRegistrar()
+                    .getPlayerInventories()
+                    .forceExpiration(playerUUID);
+
             if(openFallback) {
-                this.openFallbackGui(player);
+                this.openFallbackGui(instance, player);
             }
 
         });
@@ -127,14 +132,14 @@ public interface ActionListener extends CustomInventory {
      * Opens the fallback gui
      * @param player the player to open the gui for
      */
-    default void openFallbackGui(Player player) {
-        CustomInventory fallbackInventory = this.getInstance().getGuiConfigRegistrar()
+    default void openFallbackGui(IdentityPlugin instance, Player player) {
+        CustomInventory fallbackInventory = instance.getGuiConfigRegistrar()
                 .getPlayerInventories()
                 .get(player.getUniqueId())
-                .get(this.getInstance().getGuiConfigRegistrar().getFallbackGuiIdentifier());
+                .get(instance.getGuiConfigRegistrar().getFallbackGuiIdentifier());
 
 
-        Bukkit.getScheduler().runTask(this.getInstance(), () -> {
+        Bukkit.getScheduler().runTask(instance, () -> {
             fallbackInventory.show(player);
         });
     }

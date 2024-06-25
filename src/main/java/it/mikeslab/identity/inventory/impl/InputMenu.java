@@ -1,13 +1,12 @@
 package it.mikeslab.identity.inventory.impl;
 
 import it.mikeslab.commons.api.inventory.event.GuiInteractEvent;
+import it.mikeslab.commons.api.inventory.util.CustomInventoryContext;
+import it.mikeslab.commons.api.inventory.util.InventorySettings;
 import it.mikeslab.identity.IdentityPlugin;
-import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.config.lang.LanguageKey;
-import it.mikeslab.identity.inventory.CustomInventoryContext;
 import it.mikeslab.identity.inventory.action.ActionListener;
 import it.mikeslab.identity.pojo.Condition;
-import it.mikeslab.identity.inventory.pojo.InventorySettings;
 import it.mikeslab.identity.util.inventory.input.InputMenuContext;
 import it.mikeslab.identity.util.inventory.input.InputMenuLoader;
 import lombok.Data;
@@ -15,7 +14,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -35,6 +33,9 @@ public class InputMenu implements ActionListener {
                 instance,
                 settings
         );
+
+        this.customContext.setGuiFactory(instance.getGuiFactory());
+
     }
 
     @Override
@@ -55,7 +56,7 @@ public class InputMenu implements ActionListener {
         boolean closeOnFail = customContext.getSettings().isCloseOnFail();
 
         new AnvilGUI.Builder()
-                .onClose(stateSnapshot -> this.openFallbackGui(player))
+                .onClose(stateSnapshot -> this.openFallbackGui(instance, player))
                 .onClick((slot, stateSnapshot) -> { // Either use sync or async variant, not both
 
                     if(slot != AnvilGUI.Slot.OUTPUT) {
@@ -87,7 +88,7 @@ public class InputMenu implements ActionListener {
                         );
                     }
 
-                    this.openFallbackGui(player);
+                    this.openFallbackGui(instance, player);
                     return Collections.emptyList();
 
                 })
@@ -107,7 +108,7 @@ public class InputMenu implements ActionListener {
                 Collections.singletonList(context.getClickableElement())
         );
 
-        this.handleSelection(Optional.of(() -> input), true, Optional.of(condition))
+        this.handleSelection(instance, Optional.of(() -> input), true, Optional.of(condition))
                 .getAction()
                 .accept(event, input);
 

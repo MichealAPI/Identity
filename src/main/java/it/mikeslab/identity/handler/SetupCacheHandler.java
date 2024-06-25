@@ -26,7 +26,7 @@ public class SetupCacheHandler {
         Bukkit.getScheduler().runTaskLater(instance, () -> {
                     instance.getGuiConfigRegistrar()
                             .getPlayerInventories()
-                            .get(targetUUID)
+                            .getInventories(targetUUID)
                             .get(instance.getGuiConfigRegistrar().getFallbackGuiIdentifier())
                             .show(target);
                 }, 1L);

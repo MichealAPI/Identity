@@ -40,7 +40,7 @@ public class IdentityCacheHandler {
     public CompletableFuture<Optional<Identity>> getCachedIdentity(UUID uuid) {
 
         // Checks setup cache
-        Identity setupIdentity = setupCacheHandler.getIdentity(uuid);
+        Identity setupIdentity = setupCacheHandler.getIdentity(uuid); // todo this always returns something, even if never initialized!?
         if(setupIdentity != null) {
             return CompletableFuture.completedFuture(
                     Optional.of(setupIdentity)
