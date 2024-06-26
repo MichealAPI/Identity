@@ -23,11 +23,14 @@ public class SetupCacheHandler {
 
         UUID targetUUID = target.getUniqueId();
 
+        String fallBackIdentifier = instance
+                .getGuiConfigRegistrar()
+                .getFallbackGuiIdentifier();
+
         Bukkit.getScheduler().runTaskLater(instance, () -> {
                     instance.getGuiConfigRegistrar()
                             .getPlayerInventories()
-                            .getInventories(targetUUID)
-                            .get(instance.getGuiConfigRegistrar().getFallbackGuiIdentifier())
+                            .getInventory(targetUUID, fallBackIdentifier)
                             .show(target);
                 }, 1L);
 

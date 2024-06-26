@@ -47,15 +47,11 @@ public class GuiCloseListener implements Listener {
 
             CustomInventory targetInventory = registrar
                     .getPlayerInventories()
-                    .get(playerUUID)
-                    .get(guiKey);
+                    .getInventory(playerUUID, guiKey);
 
             CustomInventory fallbackGui = registrar
                     .getPlayerInventories()
-                    .get(playerUUID)
-                    .get(
-                            registrar.getFallbackGuiIdentifier()
-                    );
+                    .getInventory(playerUUID, registrar.getFallbackGuiIdentifier());
 
             if(fallbackGui == null) return;
 

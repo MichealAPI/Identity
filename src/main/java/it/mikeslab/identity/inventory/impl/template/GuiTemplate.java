@@ -9,6 +9,7 @@ import it.mikeslab.commons.api.inventory.util.InventorySettings;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.ConfigKey;
 import lombok.Data;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.Optional;
@@ -99,4 +100,8 @@ public abstract class GuiTemplate implements CustomInventory {
         );
     }
 
+    @Override
+    public void show(Player player) {
+        CustomInventory.super.show(player);
+    }
 }

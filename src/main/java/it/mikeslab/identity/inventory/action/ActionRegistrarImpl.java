@@ -1,6 +1,7 @@
 package it.mikeslab.identity.inventory.action;
 
 // import com.cryptomorin.xseries.XSound;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import it.mikeslab.commons.api.component.ComponentsUtil;
@@ -8,6 +9,7 @@ import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
 import it.mikeslab.commons.api.inventory.util.CustomInventory;
 import it.mikeslab.commons.api.inventory.util.action.ActionRegistrar;
 import it.mikeslab.identity.IdentityPlugin;
+import it.mikeslab.identity.util.SetupMap;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -15,6 +17,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class ActionRegistrarImpl implements ActionRegistrar {
@@ -24,7 +27,8 @@ public class ActionRegistrarImpl implements ActionRegistrar {
     @Override
     public Multimap<String, GuiAction> loadActions() {
 
-        Multimap<String, GuiAction> actionsMap = ArrayListMultimap.create();;
+        Multimap<String, GuiAction> actionsMap = ArrayListMultimap.create();
+        ;
 
         // Register the open gui action
         actionsMap.put("open", getOpenGuiAction());
@@ -86,26 +90,27 @@ public class ActionRegistrarImpl implements ActionRegistrar {
     private GuiAction getOpenGuiAction() {
         return new GuiAction((event, args) -> {
 
-                    Player player = event.getWhoClicked();
+            Player player = event.getWhoClicked();
 
-                    // Get the gui from the args
-                    Map<String, CustomInventory> inventoryMap = instance.getGuiConfigRegistrar()
-                            .getPlayerInventories()
-                            .getInventories(player.getUniqueId());
+            SetupMap setupMap = instance
+                    .getGuiConfigRegistrar()
+                    .getPlayerInventories();
 
-                    // If the gui is not present, return
-                    if (!inventoryMap.containsKey(args)) {
-                        return;
-                    }
+            UUID playerUUID = player.getUniqueId();
 
-                    // Open the gui
-                    CustomInventory gui = inventoryMap.get(args);
+            // If the gui is not present, return
+            if (!setupMap.containsInventory(playerUUID, args)) {
+                return;
+            }
 
-                    instance.getServer().getScheduler().runTask(instance, () -> {
-                        gui.show(player);
-                    });
+            // Open the gui
+            CustomInventory gui = setupMap.getInventory(playerUUID, args);
 
-                });
+            instance.getServer().getScheduler().runTask(instance, () -> {
+                gui.show(player);
+            });
+
+        });
     }
 
     private GuiAction playSoundForPlayer() {

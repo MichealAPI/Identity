@@ -14,10 +14,7 @@ import lombok.Setter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -61,23 +58,6 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
                 )
         );
 
-    }
-
-
-    @Override
-    public void setPlaceholders(Player player, GuiDetails guiDetails) {
-
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%value%", this.getValue() + "");
-
-        guiDetails.setPlaceholders(placeholders);
-
-        super.setPlaceholders(player, guiDetails);
-    }
-
-
-    @Override
-    public void show(Player player) {
 
         GuiDetails detailsClone = this
                 .getInventoryContext()
@@ -91,10 +71,21 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
                 )
         );
 
-        this.setPlaceholders(player, detailsClone);
 
-        super.show(player);
+        this.setPlaceholders(detailsClone);
 
+    }
+
+
+    @Override
+    public void setPlaceholders(GuiDetails guiDetails) {
+
+        Map<String, String> placeholders = new HashMap<>();
+        placeholders.put("%value%", this.getValue() + "");
+
+        guiDetails.setPlaceholders(placeholders);
+
+        super.setPlaceholders(guiDetails);
     }
 
 
@@ -138,6 +129,14 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
             this.value = OPERATIONS
                     .get(operator)
                     .apply(this.value, value);
+
+            String fieldIdentifier = this.getCustomContext().getSettings().getFieldIdentifier();
+            UUID uuid = event.getWhoClicked().getUniqueId();
+
+            this.getInstance()
+                    .getGuiConfigRegistrar()
+                    .getPlayerInventories()
+                    .forceExpiration(uuid, fieldIdentifier);
 
             this.show(event.getWhoClicked());
         });

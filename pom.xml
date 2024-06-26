@@ -126,7 +126,7 @@
       <dependency>
           <groupId>com.github.MichealAPI</groupId>
           <artifactId>LabCommons</artifactId>
-          <version>b440c66d31</version>
+          <version>8b5363ca2a</version>
           <scope>provided</scope>
       </dependency>
 

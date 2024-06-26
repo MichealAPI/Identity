@@ -39,7 +39,7 @@ public class GuiConfigRegistrar {
     private final Map<String, GuiRegistrarCache> cache = new HashMap<>();
 
     @Getter
-    private final Map<String, String> mandatoryInventories = new HashMap<>(); // keyId in pair with displayName
+    private final Map<String, String> mandatoryInventories = new HashMap<>(); // keyId in a pair with displayName
                                                                               // which could be defaulted to keyId in case of null
     @Getter
     private double min, max, baseValue;
