@@ -1,10 +1,10 @@
-package it.mikeslab.identity.event;
+package it.mikeslab.identity.platform.spigot.event;
 
 import it.mikeslab.commons.api.component.ComponentsUtil;
+import it.mikeslab.commons.api.various.platform.PlatformUtil;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.pojo.Identity;
-import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.entity.Player;
@@ -19,13 +19,22 @@ import java.util.UUID;
 /**
  * Listen for chat events if enabled
  * from the configuration
+ *
+ * @see ConfigKey#ENABLE_CHAT_FORMATTER
  */
-@RequiredArgsConstructor
 public class ChatListener implements Listener {
 
     private final IdentityPlugin instance;
 
-    private Identity identity; // internal identity cache
+    public ChatListener(final IdentityPlugin instance) {
+        this.instance = instance;
+
+        if(!PlatformUtil.isSpigot() && !PlatformUtil.isUnknown()) {
+            throw new UnsupportedOperationException("Unsupported platform for Spigot ChatListener.");
+        }
+
+    }
+
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
@@ -39,7 +48,6 @@ public class ChatListener implements Listener {
                 .join();
 
         identityOptional.ifPresent(value -> {
-            this.identity = value;
 
             event.setFormat(
                     this.getFormat(

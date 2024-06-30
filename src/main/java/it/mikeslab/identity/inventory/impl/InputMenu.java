@@ -1,15 +1,15 @@
 package it.mikeslab.identity.inventory.impl;
 
 import it.mikeslab.commons.api.inventory.event.GuiInteractEvent;
-import it.mikeslab.commons.api.inventory.util.CustomInventoryContext;
-import it.mikeslab.commons.api.inventory.util.InventorySettings;
+import it.mikeslab.commons.api.inventory.pojo.GuiContext;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.action.ActionListener;
 import it.mikeslab.identity.pojo.Condition;
 import it.mikeslab.identity.util.inventory.input.InputMenuContext;
 import it.mikeslab.identity.util.inventory.input.InputMenuLoader;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
@@ -18,42 +18,31 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-
-
-@Data
+@Getter @Setter
 public class InputMenu implements ActionListener {
 
-    private CustomInventoryContext customContext; // No context for this inventory
-    private IdentityPlugin instance;
+    private final IdentityPlugin instance;
+    private GuiContext guiContext;
 
-    public InputMenu(IdentityPlugin instance, InventorySettings settings) {
+    public InputMenu(IdentityPlugin instance, GuiContext guiContext) {
         this.instance = instance;
-
-        this.customContext = new CustomInventoryContext(
-                instance,
-                settings
-        );
-
-        this.customContext.setGuiFactory(instance.getGuiFactory());
-
+        this.guiContext = guiContext;
     }
 
     @Override
     public void show(Player player) {
 
-        if(customContext == null) return;
+        if(guiContext == null) return;
 
         InputMenuLoader inputMenuLoader = instance
                 .getGuiConfigRegistrar()
                 .getInputMenuLoader();
 
         InputMenuContext context = inputMenuLoader.load(
-                customContext
-                        .getSettings()
-                        .getRelativePath()
+                guiContext.getRelativePath()
         );
 
-        boolean closeOnFail = customContext.getSettings().isCloseOnFail();
+        boolean closeOnFail = guiContext.isCloseOnFail();
 
         new AnvilGUI.Builder()
                 .onClose(stateSnapshot -> this.openFallbackGui(instance, player))

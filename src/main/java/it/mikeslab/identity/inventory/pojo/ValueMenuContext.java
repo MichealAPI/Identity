@@ -7,6 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ValueMenuContext {
 
-    private final double baseValue, max, min;
+    private final int baseValue, max, min;
 
 }

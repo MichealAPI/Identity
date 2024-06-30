@@ -5,18 +5,19 @@ package it.mikeslab.identity.inventory.action;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import it.mikeslab.commons.api.component.ComponentsUtil;
+import it.mikeslab.commons.api.inventory.CustomInventory;
 import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
-import it.mikeslab.commons.api.inventory.util.CustomInventory;
 import it.mikeslab.commons.api.inventory.util.action.ActionRegistrar;
+import it.mikeslab.commons.api.various.util.XSound;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.util.SetupMap;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -28,7 +29,6 @@ public class ActionRegistrarImpl implements ActionRegistrar {
     public Multimap<String, GuiAction> loadActions() {
 
         Multimap<String, GuiAction> actionsMap = ArrayListMultimap.create();
-        ;
 
         // Register the open gui action
         actionsMap.put("open", getOpenGuiAction());
@@ -43,11 +43,18 @@ public class ActionRegistrarImpl implements ActionRegistrar {
 
     }
 
+
     private GuiAction sendMessageToPlayer() {
         return new GuiAction((event, args) -> {
-
             Player player = event.getWhoClicked();
-            player.sendMessage(ComponentsUtil.getSerializedComponent(args));
+            Component message = ComponentsUtil.getComponent(args);
+
+            if(message == null) return;
+
+            instance
+                    .getAudiences()
+                    .player(player)
+                    .sendMessage(message);
         });
     }
 
@@ -119,14 +126,13 @@ public class ActionRegistrarImpl implements ActionRegistrar {
             Player target = ev.getWhoClicked();
             Location location = target.getLocation();
 
-            // TODO FIX
-            // XSound xSound = XSound.matchXSound(args).orElse(null);
+            XSound xSound = XSound.matchXSound(args).orElse(null);
 
-            //if(xSound == null) {
-            //     return;
-            //}
+            if(xSound == null) {
+                 return;
+            }
 
-            //xSound.play(location, 1, 1);
+            xSound.play(location, 1, 1);
         });
     }
 

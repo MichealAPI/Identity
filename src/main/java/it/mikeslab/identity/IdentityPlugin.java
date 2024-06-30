@@ -9,19 +9,21 @@ import it.mikeslab.commons.api.database.async.AsyncDatabase;
 import it.mikeslab.commons.api.database.async.AsyncDatabaseImpl;
 import it.mikeslab.commons.api.database.config.ConfigDatabaseUtil;
 import it.mikeslab.commons.api.formatter.FormatUtil;
-import it.mikeslab.commons.api.inventory.GuiFactory;
 import it.mikeslab.commons.api.inventory.config.ConditionParser;
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
 import it.mikeslab.commons.api.inventory.event.GuiListener;
+import it.mikeslab.commons.api.inventory.factory.GuiFactory;
 import it.mikeslab.commons.api.inventory.factory.GuiFactoryImpl;
-import it.mikeslab.commons.api.inventory.util.InventoryMap;
 import it.mikeslab.commons.api.inventory.util.action.ActionHandler;
 import it.mikeslab.commons.api.inventory.util.action.ActionHandlerImpl;
 import it.mikeslab.commons.api.inventory.util.action.ActionRegistrar;
-import it.mikeslab.commons.api.logger.LoggerUtil;
+import it.mikeslab.commons.api.logger.LogUtils;
+import it.mikeslab.commons.api.various.message.MessageHelper;
+import it.mikeslab.commons.api.various.message.MessageHelperImpl;
+import it.mikeslab.commons.api.various.platform.PlatformUtil;
 import it.mikeslab.identity.command.IdentityCommand;
 import it.mikeslab.identity.config.ConfigKey;
-import it.mikeslab.identity.event.ChatListener;
+import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.event.GuiCloseListener;
 import it.mikeslab.identity.event.PlayerListener;
 import it.mikeslab.identity.handler.AntiSpam;
@@ -32,17 +34,23 @@ import it.mikeslab.identity.inventory.action.ActionRegistrarImpl;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
 import it.mikeslab.identity.inventory.config.condition.ConditionParserImpl;
 import it.mikeslab.identity.papi.IdentityExpansion;
+import it.mikeslab.identity.platform.PlatformLoader;
+import it.mikeslab.identity.platform.paper.PlatformLoaderPaperImpl;
+import it.mikeslab.identity.platform.spigot.PlatformLoaderSpigotImpl;
 import it.mikeslab.identity.pojo.Identity;
+import it.mikeslab.identity.preset.PresetsHelper;
 import it.mikeslab.identity.preset.PresetsManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
@@ -74,11 +82,17 @@ public final class IdentityPlugin extends JavaPlugin {
 
     private ConditionParser conditionParser;
 
+    private PresetsManager presetsManager;
+
+    private PlatformLoader platformLoader;
+
+    private MessageHelperImpl messageHelper;
+
     @Override
     public void onEnable() {
 
         // Get the API plug-in instance
-        // this.labCommons = new LabCommons();
+        //this.labCommons = new LabCommons();
 
         this.labCommons = (LabCommons) this.getServer()
                 .getPluginManager()
@@ -88,6 +102,8 @@ public final class IdentityPlugin extends JavaPlugin {
 
         this.audiences = BukkitAudiences.create(this);
 
+        this.messageHelper = new MessageHelperImpl(audiences);
+
         this.initConfig();
 
         this.setMongoLoggingToInfo();
@@ -96,15 +112,13 @@ public final class IdentityPlugin extends JavaPlugin {
 
         initDatabase().thenAccept(isConnected -> {
             if(isConnected) {
-                LoggerUtil.log(
-                        Level.INFO,
-                        LoggerUtil.LogSource.DATABASE,
+                LogUtils.info(
+                        LogUtils.LogSource.DATABASE,
                         "Connected to database."
                 );
             } else {
-                LoggerUtil.log(
-                        Level.WARNING,
-                        LoggerUtil.LogSource.DATABASE,
+                LogUtils.warn(
+                        LogUtils.LogSource.DATABASE,
                         "Failed to connect to database."
                 );
             }
@@ -112,6 +126,8 @@ public final class IdentityPlugin extends JavaPlugin {
 
         this.initInventories();
         this.initCache();
+
+        this.loadPlatform();
 
         this.initListeners();
 
@@ -136,15 +152,15 @@ public final class IdentityPlugin extends JavaPlugin {
         this.identityDatabase.disconnect().thenAccept(
                 isDisconnected -> {
                     if(isDisconnected) {
-                        LoggerUtil.log(
+                        LogUtils.log(
                                 Level.INFO,
-                                LoggerUtil.LogSource.DATABASE,
+                                LogUtils.LogSource.DATABASE,
                                 "Disconnected from database."
                         );
                     } else {
-                        LoggerUtil.log(
+                        LogUtils.log(
                                 Level.WARNING,
-                                LoggerUtil.LogSource.DATABASE,
+                                LogUtils.LogSource.DATABASE,
                                 "Failed to disconnect from database."
                         );
                     }
@@ -162,26 +178,24 @@ public final class IdentityPlugin extends JavaPlugin {
 
         this.initActions();
 
-        GuiFactoryImpl guiFactoryImpl = new GuiFactoryImpl(this);
-        this.guiFactory = guiFactoryImpl;
-        this.guiListener = new GuiListener(guiFactoryImpl, this);
+        if(guiFactory == null) {
+            this.guiFactory = new GuiFactoryImpl(this);
+        }
 
-        this.getServer().getPluginManager().registerEvents(
-                guiListener,
-                this
-        );
+        if(this.guiListener == null)
+            this.guiListener = new GuiListener(guiFactory, this);
 
         // from config
         this.guiConfigRegistrar = new GuiConfigRegistrar(
                 this,
-                this.getCustomConfig().getConfiguration().getConfigurationSection(Section.GUIS.getFieldName())
+                Section.GUIS.getFieldName()
         );
 
         this.guiConfigRegistrar.register();
 
         this.guiFactory.setActionHandler(actionHandler);
         this.guiFactory.setConditionParser(conditionParser);
-        this.guiFactory.setInventoryMap(() -> this.guiConfigRegistrar.getPlayerInventories());
+        this.guiFactory.setInventoryMap(this.getGuiConfigRegistrar().getPlayerInventories());
 
     }
 
@@ -231,12 +245,10 @@ public final class IdentityPlugin extends JavaPlugin {
         save(configFile.getName(), false);
         save(antiSpamConfigFile.getName(), false);
 
-        this.language = Configurable
-                .newInstance()
+        this.language = LabCommons.registerConfigurable(LanguageKey.class)
                 .loadConfiguration(languageConfigFile);
 
-        this.customConfig = Configurable
-                .newInstance()
+        this.customConfig = LabCommons.registerConfigurable(ConfigKey.class)
                 .loadConfiguration(configFile);
 
         this.antiSpamConfig = Configurable
@@ -244,7 +256,9 @@ public final class IdentityPlugin extends JavaPlugin {
                 .loadConfiguration(antiSpamConfigFile);
 
 
-        new PresetsManager(this).loadPresets();
+        this.presetsManager = new PresetsManager(this);
+
+        this.presetsManager.extractDefaults(); // todo rename to extractDefaults
 
     }
 
@@ -255,18 +269,16 @@ public final class IdentityPlugin extends JavaPlugin {
     }
 
     private void initListeners() {
+
+        this.getServer().getPluginManager().registerEvents(
+                guiListener,
+                this
+        );
+
         this.getServer().getPluginManager().registerEvents(
                 new PlayerListener(this),
                 this
         );
-
-        // Chat formatter
-        if(this.getCustomConfig().getBoolean(ConfigKey.ENABLE_CHAT_FORMATTER)) {
-            this.getServer().getPluginManager().registerEvents(
-                     new ChatListener(this),
-                     this
-            );
-        }
 
         // GuiListener
         this.getServer().getPluginManager().registerEvents(
@@ -274,16 +286,21 @@ public final class IdentityPlugin extends JavaPlugin {
                 this
         );
 
-
+        this.platformLoader.initListeners();
     }
 
     private void registerCommands() {
+
         BukkitCommandManager manager = new BukkitCommandManager(this);
 
         String commandAliases = this.getCustomConfig().getString(ConfigKey.COMMAND_ALIASES);
 
         CommandReplacements replacements = manager.getCommandReplacements();
         replacements.addReplacement("%command-aliases%", commandAliases);
+
+        manager.getCommandCompletions().registerAsyncCompletion("presets", c -> {
+            return new PresetsHelper(this).listLoadablePresents();
+        });
 
         manager.registerCommand(new IdentityCommand(this));
 
@@ -326,6 +343,68 @@ public final class IdentityPlugin extends JavaPlugin {
     }
 
 
+    /**
+     * Reloads the configuration files and inventories
+     */
+    public void reload() {
+
+        try {
+            // Reload configuration files
+
+            this.language = this.getLanguage().reload();
+            this.customConfig = this.getCustomConfig().reload();
+            this.antiSpamConfig = this.getAntiSpamConfig().reload();
+
+            // Kick in-setup-players
+            this.getServer().getOnlinePlayers().forEach(
+                    player -> {
+
+                        UUID uuid = player.getUniqueId();
+
+                        if (this.getSetupCacheHandler().getIdentity(uuid) != null) {
+
+                            this.getSetupCacheHandler().remove(uuid);
+
+                            Bukkit.getScheduler().runTask(this, () -> {
+                                player.kickPlayer(
+                                        this.getLanguage().getSerializedString(LanguageKey.RELOAD_KICK_CAUSE)
+                                );
+                            });
+                        }
+                    }
+            );
+
+            // Reload inventories
+            this.initInventories();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void loadPlatform() {
+
+        if(PlatformUtil.isPaper()) {
+            LogUtils.info(
+                    LogUtils.LogSource.PLUGIN,
+                    "Loading platform support for Paper."
+            );
+            this.platformLoader = new PlatformLoaderPaperImpl(this);
+            return;
+        }
+
+        if(PlatformUtil.isSpigot() || PlatformUtil.isUnknown()) {
+            LogUtils.info(
+                    LogUtils.LogSource.PLUGIN,
+                    "Loading platform support for Spigot."
+            );
+            this.platformLoader = new PlatformLoaderSpigotImpl(this);
+        }
+    }
+
+
     @Getter
     @RequiredArgsConstructor
     private enum Section {
@@ -335,6 +414,7 @@ public final class IdentityPlugin extends JavaPlugin {
         private final String fieldName;
 
     }
+
 
 
 }

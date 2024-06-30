@@ -32,3 +32,12 @@ identity-setup-start: "Identity setup started"
 
 unset-value: "Unset value"
 
+reload-success: "Reload successful"
+
+reload-kick-cause: "You have been kicked because of the configuration changes, please rejoin"
+
+preset-doesnt-exists: "The file <file> does not exist in the presets folder."
+preset-extract-error: "An error occurred while extracting the preset, check the console for more details."
+preset-no-inventory-section: "The preset config does not contain any inventory section."
+preset-invalid-entries: "The preset config contains invalid entries."
+preset-loaded: "The preset <file> has been successfully loaded."

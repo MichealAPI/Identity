@@ -1,6 +1,6 @@
 package it.mikeslab.identity.inventory.config;
 
-import it.mikeslab.commons.api.inventory.util.InventoryType;
+import it.mikeslab.commons.api.inventory.InventoryType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.configuration.ConfigurationSection;

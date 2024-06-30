@@ -1,9 +1,9 @@
 package it.mikeslab.identity.inventory.config;
 
-import it.mikeslab.commons.api.inventory.util.CustomInventory;
-import it.mikeslab.commons.api.inventory.util.InventorySettings;
-import it.mikeslab.commons.api.inventory.util.InventoryType;
-import it.mikeslab.commons.api.logger.LoggerUtil;
+import it.mikeslab.commons.api.inventory.CustomInventory;
+import it.mikeslab.commons.api.inventory.InventoryType;
+import it.mikeslab.commons.api.inventory.pojo.GuiContext;
+import it.mikeslab.commons.api.logger.LogUtils;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.impl.InputMenu;
 import it.mikeslab.identity.inventory.impl.MainMenu;
@@ -42,7 +42,9 @@ public class GuiConfigRegistrar {
     private final Map<String, String> mandatoryInventories = new HashMap<>(); // keyId in a pair with displayName
                                                                               // which could be defaulted to keyId in case of null
     @Getter
-    private double min, max, baseValue;
+    private int min, max, baseValue;
+
+    private Map<String, CustomInventory> guis;
 
     @Getter
     private final InputMenuLoader inputMenuLoader;
@@ -50,9 +52,11 @@ public class GuiConfigRegistrar {
     private String inventoryKeyId; // Internal use, rapid switching between keys
 
 
-    public GuiConfigRegistrar(IdentityPlugin instance, ConfigurationSection section) {
+    public GuiConfigRegistrar(IdentityPlugin instance, String section) {
         this.instance = instance;
-        this.section = section;
+        this.section = instance.getCustomConfig()
+                .getConfiguration()
+                .getConfigurationSection(section);
 
         this.playerInventories = new SetupMap(instance);
 
@@ -61,7 +65,11 @@ public class GuiConfigRegistrar {
 
     public Map<String, CustomInventory> getGuis() {
 
-        Map<String, CustomInventory> guis = new HashMap<>();
+        if(guis != null && !guis.isEmpty()) {
+            return guis;
+        }
+
+        this.guis = new HashMap<>();
 
         for(Map.Entry<String, GuiRegistrarCache> entry : cache.entrySet()) {
 
@@ -78,10 +86,19 @@ public class GuiConfigRegistrar {
     }
 
 
+    public void unregister() {
+        this.guis.clear();
+        this.playerInventories.clearInventoryMap();
+    }
+
     /**
      * Register the configuration for each custom inventory
      */
     public void register() {
+
+        this.guis = new HashMap<>();
+        this.cache.clear();
+
         for(String key : section.getKeys(false)) {
 
             this.inventoryKeyId = key;
@@ -114,9 +131,9 @@ public class GuiConfigRegistrar {
         }
 
         if(fallbackGuiIdentifier == null) {
-            LoggerUtil.log(
+            LogUtils.log(
                     Level.SEVERE,
-                    LoggerUtil.LogSource.CONFIG,
+                    LogUtils.LogSource.CONFIG,
                     "No main menu found in the configuration"
             );
             Bukkit.getPluginManager().disablePlugin(instance);
@@ -151,9 +168,9 @@ public class GuiConfigRegistrar {
         boolean mandatory = configSection.getBoolean(ConfigField.MANDATORY.getField(), false); // mandatory is defaulted to false
 
         if(mandatory && type == InventoryType.MAIN) {
-            LoggerUtil.log(
+            LogUtils.log(
                     Level.WARNING,
-                    LoggerUtil.LogSource.CONFIG,
+                    LogUtils.LogSource.CONFIG,
                     "Inventory '" + inventoryKeyId + "' is marked as mandatory but is a main menu"
             );
             return false;
@@ -163,9 +180,9 @@ public class GuiConfigRegistrar {
     }
 
     private void logMissingRequiredField() {
-        LoggerUtil.log(
+        LogUtils.log(
                 Level.WARNING,
-                LoggerUtil.LogSource.CONFIG,
+                LogUtils.LogSource.CONFIG,
                 "Inventory '" + inventoryKeyId + "' is missing a required field (Required fields:"
                         + ConfigField.TYPE.getField() + ", " + ConfigField.PATH.getField() + ")"
         );
@@ -176,9 +193,9 @@ public class GuiConfigRegistrar {
      * @param configSection The configuration section
      */
     private void processValueType(ConfigurationSection configSection) {
-        min = configSection.getDouble(ConfigField.MIN.getField(), Double.MIN_VALUE);
-        max = configSection.getDouble(ConfigField.MAX.getField(), Double.MAX_VALUE);
-        baseValue = configSection.getDouble(ConfigField.BASE.getField(), 0);
+        min = configSection.getInt(ConfigField.MIN.getField(), Integer.MIN_VALUE);
+        max = configSection.getInt(ConfigField.MAX.getField(), Integer.MAX_VALUE);
+        baseValue = configSection.getInt(ConfigField.BASE.getField(), 0);
     }
 
 
@@ -193,10 +210,10 @@ public class GuiConfigRegistrar {
 
         // Check if the file exists
         if(!configFile.exists()) {
-            LoggerUtil
+            LogUtils
                     .log(
                             Level.WARNING,
-                            LoggerUtil.LogSource.CONFIG,
+                            LogUtils.LogSource.CONFIG,
                             "File at '" + configFile.getAbsolutePath() + "' does not exist"
                     );
             return null;
@@ -209,19 +226,21 @@ public class GuiConfigRegistrar {
         Path relativePath = rootPath.relativize(fullPath);
 
         // Create the gui config
-        InventorySettings settings = new InventorySettings(
-                inventoryKeyId,
-                relativePath,
-                false, // todo configurable
-                cache.getInventoryType()
-        );
+
+        GuiContext context = GuiContext.builder()
+                .fieldIdentifier(inventoryKeyId)
+                .relativePath(relativePath)
+                .closeOnFail(false) // todo configurable
+                .inventoryType(cache.getInventoryType())
+                .guiFactory(instance.getGuiFactory())
+                .build();
 
         switch (cache.getInventoryType()) {
 
-            case SELECTOR: return new SelectorMenu(instance, settings);
-            case MAIN: return new MainMenu(instance, settings);
-            case VALUE: return new ValueMenu(instance, settings, new ValueMenuContext(baseValue, max, min));
-            case INPUT: return new InputMenu(instance, settings);
+            case SELECTOR: return new SelectorMenu(instance, context);
+            case MAIN: return new MainMenu(instance, context);
+            case VALUE: return new ValueMenu(instance, context, new ValueMenuContext(baseValue, max, min));
+            case INPUT: return new InputMenu(instance, context);
 
             default: return null;
 
@@ -252,7 +271,7 @@ public class GuiConfigRegistrar {
 
     @Getter
     @RequiredArgsConstructor
-    private enum ConfigField {
+    public enum ConfigField {
 
         TYPE("type"),
         PATH("path"),

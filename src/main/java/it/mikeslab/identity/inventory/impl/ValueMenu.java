@@ -1,18 +1,19 @@
 package it.mikeslab.identity.inventory.impl;
 
+import it.mikeslab.commons.api.component.ComponentsUtil;
+import it.mikeslab.commons.api.inventory.pojo.GuiContext;
 import it.mikeslab.commons.api.inventory.pojo.GuiDetails;
 import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
-import it.mikeslab.commons.api.inventory.util.InventorySettings;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.action.ActionListener;
 import it.mikeslab.identity.inventory.impl.template.GuiTemplate;
 import it.mikeslab.identity.inventory.pojo.ValueMenuContext;
 import it.mikeslab.identity.pojo.Condition;
+import it.mikeslab.identity.util.SetupMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -21,10 +22,10 @@ import java.util.function.Supplier;
 @Getter @Setter
 public class ValueMenu extends GuiTemplate implements ActionListener {
 
-    private static final Map<String, BiFunction<Double, Double, Double>> OPERATIONS;
+    private static final Map<String, BiFunction<Integer, Integer, Integer>> OPERATIONS;
 
     static {
-        Map<String, BiFunction<Double, Double, Double>> operations = new HashMap<>();
+        Map<String, BiFunction<Integer, Integer, Integer>> operations = new HashMap<>();
         operations.put("+", (a, b) -> a + b);
         operations.put("-", (a, b) -> a - b);
         operations.put("*", (a, b) -> a * b);
@@ -32,13 +33,13 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
         OPERATIONS = Collections.unmodifiableMap(operations);
     }
 
-    private double value;
+    private int value;
 
-    private final double min, max;
+    private final int min, max;
 
 
-    public ValueMenu(IdentityPlugin instance, InventorySettings settings, ValueMenuContext context) {
-        super(instance, settings);
+    public ValueMenu(IdentityPlugin instance, GuiContext guiContext, ValueMenuContext context) {
+        super(instance, guiContext);
 
         this.min = context.getMin();
         this.max = context.getMax();
@@ -58,9 +59,12 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
                 )
         );
 
+        // Overriding default to enable placeholder value
+        this.injectAction(instance, "message", this.getMessageAction());
+
 
         GuiDetails detailsClone = this
-                .getInventoryContext()
+                .getGuiContext()
                 .getDefaultGuiDetails()
                 .clone();
 
@@ -80,8 +84,8 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
     @Override
     public void setPlaceholders(GuiDetails guiDetails) {
 
-        Map<String, String> placeholders = new HashMap<>();
-        placeholders.put("%value%", this.getValue() + "");
+        Map<String, Supplier<String>> placeholders = new HashMap<>();
+        placeholders.put("%value%", () -> String.valueOf(this.getValue()));
 
         guiDetails.setPlaceholders(placeholders);
 
@@ -108,7 +112,7 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
                 return;
             }
 
-            double value = Double.parseDouble(amount);
+            int value = Integer.parseInt(amount);
             double result = OPERATIONS
                     .get(operator)
                     .apply(this.value, value);
@@ -130,15 +134,17 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
                     .get(operator)
                     .apply(this.value, value);
 
-            String fieldIdentifier = this.getCustomContext().getSettings().getFieldIdentifier();
+            String fieldIdentifier = this.getGuiContext().getFieldIdentifier();
             UUID uuid = event.getWhoClicked().getUniqueId();
 
-            this.getInstance()
+            SetupMap setupMap = this.getInstance()
                     .getGuiConfigRegistrar()
-                    .getPlayerInventories()
-                    .forceExpiration(uuid, fieldIdentifier);
+                    .getPlayerInventories();
 
-            this.show(event.getWhoClicked());
+            setupMap.forceExpiration(uuid, fieldIdentifier); // updates the current inventory
+
+            setupMap.getInventory(uuid, fieldIdentifier)
+                    .show(event.getWhoClicked());
         });
     }
 
@@ -168,6 +174,26 @@ public class ValueMenu extends GuiTemplate implements ActionListener {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    /**
+     * Get the message action
+     * (Overrides the default action)
+     * @return The action bi-consumer
+     */
+    private GuiAction getMessageAction() {
+        return new GuiAction((event, args) -> {
+
+            String message = ComponentsUtil.getSerializedComponent(
+                    args,
+                    Placeholder.unparsed("value", this.getValue() + "")
+            );
+
+            if(message == null) return;
+
+            event.getWhoClicked().sendMessage(message);
+
+        });
     }
 
 

@@ -26,7 +26,14 @@ public enum LanguageKey implements ConfigurableEnum {
    MANDATORY_CLOSE_ATTEMPT("mandatory-close-attempt", "These inventories are mandatory to be completed: <missing>"),
    IDENTITY_ALREADY_SET("identity-already-set", "Identity already set"),
    IDENTITY_SETUP_START("identity-setup-start", "Identity setup started"),
-   UNSET_VALUE("unset-value", "Unset value"),;
+   UNSET_VALUE("unset-value", "Unset value"),
+   RELOAD_SUCCESS("reload-success", "Reload successful"),
+   RELOAD_KICK_CAUSE("reload-kick-cause", "You have been kicked because of the configuration changes, please rejoin"),
+   PRESET_DOESNT_EXISTS("preset-doesnt-exists", "The file <file> does not exist in the presets folder."),
+   PRESET_EXTRACT_ERROR("preset-extract-error", "An error occurred while extracting the preset, check the console for more details."),
+   PRESET_NO_INVENTORY_SECTION("preset-no-inventory-section", "The preset config does not contain any inventory section."),
+   PRESET_INVALID_ENTRIES("preset-invalid-entries", "The preset config contains invalid entries."),
+   PRESET_LOADED("preset-loaded", "The preset <file> has been successfully loaded.");
 
 
    private final String path;

@@ -1,14 +1,14 @@
 package it.mikeslab.identity.inventory.impl.template;
 
+import it.mikeslab.commons.api.inventory.CustomInventory;
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
 import it.mikeslab.commons.api.inventory.config.GuiConfigImpl;
-import it.mikeslab.commons.api.inventory.util.CustomInventory;
-import it.mikeslab.commons.api.inventory.util.CustomInventoryContext;
-import it.mikeslab.commons.api.inventory.util.InventoryContext;
-import it.mikeslab.commons.api.inventory.util.InventorySettings;
+import it.mikeslab.commons.api.inventory.pojo.GuiContext;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.ConfigKey;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -17,19 +17,18 @@ import java.util.Optional;
 @Data
 public abstract class GuiTemplate implements CustomInventory {
 
-    private CustomInventoryContext customContext;
+    @Setter
+    private GuiContext guiContext;
     private IdentityPlugin instance;
 
-    public GuiTemplate(final IdentityPlugin instance, InventorySettings settings) {
+    public GuiTemplate(final IdentityPlugin instance, GuiContext context) {
         this.instance = instance;
-
-        this.autowire(instance, settings);
+        this.guiContext = context;
 
         this.generate();
 
         // Setting up for animations
-        customContext
-                .getInventoryContext()
+        context
                 .getDefaultGuiDetails()
                 .setAnimationInterval(
                         instance.getCustomConfig().getInt(ConfigKey.ANIMATION_INTERVAL)
@@ -62,7 +61,7 @@ public abstract class GuiTemplate implements CustomInventory {
 
         // Set up the context
         // Get the default gui details
-        this.getInventoryContext().setDefaultGuiDetails(guiConfig.getGuiDetails(
+        this.getGuiContext().setDefaultGuiDetails(guiConfig.getGuiDetails(
                 Optional.empty(),
                 this.getConsumers()
         ));
@@ -71,37 +70,10 @@ public abstract class GuiTemplate implements CustomInventory {
                 this.getInstance()
                         .getGuiFactory()
                         .create(
-                                this.getInventoryContext().getDefaultGuiDetails()
+                                this.getGuiContext().getDefaultGuiDetails()
                         )
         );
 
     }
 
-
-
-    /**
-     * Autowires constructor values
-     * @param instance The instance of the plugin
-     * @param settings The settings of the inventory
-     */
-    private void autowire(final IdentityPlugin instance, final InventorySettings settings) {
-
-        CustomInventoryContext context = new CustomInventoryContext(instance, settings);
-        context.setGuiFactory(instance.getGuiFactory());
-
-        this.setCustomContext(context);
-
-        this.setInstance(instance);
-
-        this.setInventoryContext(new InventoryContext());
-
-        this.getInventoryContext().setConsumers(
-                this.getConsumers()
-        );
-    }
-
-    @Override
-    public void show(Player player) {
-        CustomInventory.super.show(player);
-    }
 }

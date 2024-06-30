@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import it.mikeslab.commons.api.formatter.FormatUtil;
+import it.mikeslab.commons.api.various.message.MessageHelper;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.Permission;
 import it.mikeslab.identity.config.lang.LanguageKey;
@@ -21,18 +22,18 @@ import java.util.UUID;
 public class IdentityCommand extends BaseCommand {
 
     private final IdentityPlugin instance;
-    private final BukkitAudiences audiences;
+    private final MessageHelper helper;
 
     public IdentityCommand(final IdentityPlugin instance) {
 
         this.instance = instance;
-        this.audiences = instance.getAudiences();
+        this.helper = instance.getMessageHelper();
 
     }
 
     @Default
     public void defaultCommand(CommandSender sender) {
-        FormatUtil.sendRunningInfos(audiences.sender(sender), instance, "9C00FF");
+        FormatUtil.sendRunningInfos(instance.getAudiences().sender(sender), instance, "9C00FF");
     }
 
     @Subcommand("setup")
@@ -47,13 +48,9 @@ public class IdentityCommand extends BaseCommand {
                     identityOptional -> {
 
                         if(identityOptional.isPresent()) {
-                            audiences.sender(sender).sendMessage(
-                                    instance.getLanguage().getComponent(LanguageKey.IDENTITY_ALREADY_SET)
-                            );
+                            helper.sendMessage(sender, LanguageKey.IDENTITY_ALREADY_SET);
                         } else {
-                            audiences.sender(sender).sendMessage(
-                                    instance.getLanguage().getComponent(LanguageKey.IDENTITY_SETUP_START)
-                            );
+                            helper.sendMessage(sender, LanguageKey.IDENTITY_SETUP_START);
 
                             instance.getSetupCacheHandler().initSetup(instance, sender);
                         }
@@ -87,7 +84,7 @@ public class IdentityCommand extends BaseCommand {
         // therefore, there is a time interval in which players could be stored only in
         // the setup passage
         if(instance.getSetupCacheHandler().getIdentity(targetUUID) != null) {
-            audiences.sender(sender).sendMessage(resetMessage);
+            instance.getAudiences().sender(sender).sendMessage(resetMessage);
 
             instance.getSetupCacheHandler().remove(targetUUID);
 
@@ -101,7 +98,7 @@ public class IdentityCommand extends BaseCommand {
                     if(deleted) {
 
                         // Reset the identity of the player
-                        audiences.sender(sender).sendMessage(resetMessage);
+                        instance.getAudiences().sender(sender).sendMessage(resetMessage);
 
                         // Kick out to init a new Identity setup session
                         this.kickReset(targetPlayer);
@@ -109,11 +106,29 @@ public class IdentityCommand extends BaseCommand {
                     } else {
 
                         // Player isn't found in the database
-                        audiences.sender(sender).sendMessage(notFound);
+                        instance.getAudiences().sender(sender).sendMessage(notFound);
                     }
                 }
         );
     }
+
+
+    @Subcommand("reload")
+    @Description("Reloads the plugin configurations")
+    @CommandPermission(Permission.IDENTITY_RELOAD)
+    public void reload(CommandSender sender) {
+        instance.reload();
+        helper.sendMessage(sender, LanguageKey.RELOAD_SUCCESS);
+    }
+
+    @Subcommand("loadPreset")
+    @Description("Loads a preset from the presets folder")
+    @CommandPermission(Permission.IDENTITY_LOAD_PRESET)
+    @CommandCompletion("@presets")
+    public void loadPresets(CommandSender sender, String fileName) {
+        instance.getPresetsManager().loadExternalPreset(sender, fileName);
+    }
+
 
     /**
      * Kicks the player to reset the identity

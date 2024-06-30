@@ -1,9 +1,8 @@
 package it.mikeslab.identity.event;
 
-import it.mikeslab.commons.api.inventory.CustomGui;
+import it.mikeslab.commons.api.inventory.CustomInventory;
+import it.mikeslab.commons.api.inventory.InventoryType;
 import it.mikeslab.commons.api.inventory.event.GuiCloseEvent;
-import it.mikeslab.commons.api.inventory.util.CustomInventory;
-import it.mikeslab.commons.api.inventory.util.InventoryType;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
@@ -114,15 +113,13 @@ public class GuiCloseListener implements Listener {
                         instance,
                         () -> {
 
-                            player.sendMessage(
-                                    instance.getLanguage()
-                                            .getSerializedString(
+                            instance.getMessageHelper().sendMessage(player,
                                                     LanguageKey.MANDATORY_CLOSE_ATTEMPT,
                                                     Placeholder.unparsed(
                                                             "missing",
                                                             String.join(", ", missingInventoriesDisplayName)
                                                     )
-                                            ));
+                                            );
 
                             fallbackGui.show(player);
                         }

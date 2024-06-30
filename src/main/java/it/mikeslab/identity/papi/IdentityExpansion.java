@@ -40,15 +40,11 @@ public class IdentityExpansion extends PlaceholderExpansion {
             identity = loadFromSetupCache(player);
         }
 
-        if (identity == null) {
-            return instance.getLanguage().getSerializedString(LanguageKey.UNSET_VALUE);
-        }
-
         if(identity.getValues().containsKey(identifier)) {
             return String.valueOf(identity.getValues().get(identifier));
         }
 
-        return ""; // todo unset placeholder
+        return instance.getLanguage().getSerializedString(LanguageKey.UNSET_VALUE);
 
     }
 

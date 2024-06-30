@@ -1,8 +1,8 @@
 package it.mikeslab.identity.inventory.action;
 
+import it.mikeslab.commons.api.inventory.CustomInventory;
 import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
-import it.mikeslab.commons.api.inventory.util.CustomInventory;
-import it.mikeslab.commons.api.logger.LoggerUtil;
+import it.mikeslab.commons.api.logger.LogUtils;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.pojo.Condition;
 import it.mikeslab.identity.pojo.Identity;
@@ -13,7 +13,6 @@ import java.util.AbstractMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 
 public interface ActionListener extends CustomInventory {
 
@@ -95,9 +94,8 @@ public interface ActionListener extends CustomInventory {
                     .getIdentity(playerUUID);
 
             if (identity == null) {
-                LoggerUtil.log(
-                        Level.WARNING,
-                        LoggerUtil.LogSource.UTIL,
+                LogUtils.warn(
+                        LogUtils.LogSource.UTIL,
                         "Could not find identity for player with UUID: " + playerUUID + " during setup."
                 );
                 return;
@@ -107,22 +105,28 @@ public interface ActionListener extends CustomInventory {
             instance.getSetupCacheHandler().updateIdentity(
                     playerUUID,
                     new AbstractMap.SimpleEntry<>(
-                            this.getCustomContext().getSettings().getFieldIdentifier(),
+                            this.getGuiContext().getFieldIdentifier(),
                             selectedValue
                     )
             );
 
-            // Set the completed flag
-            this.setCompleted(true);
-
-            // This force-regen inventories that may contain placeholder value
-            // that request the value of the field that has just been set
-            instance.getGuiConfigRegistrar()
-                    .getPlayerInventories()
-                    .forceExpiration(playerUUID);
-
             if(openFallback) {
-                this.openFallbackGui(instance, player);
+
+                String fallbackIdentifier = instance.getGuiConfigRegistrar().getFallbackGuiIdentifier();
+
+                // This force-regen the main inventory that may contain the
+                // now updated placeholder value
+                instance.getGuiConfigRegistrar()
+                        .getPlayerInventories()
+                        .forceExpiration(
+                                playerUUID,
+                                fallbackIdentifier
+                        );
+
+                this.openFallbackGui(
+                        instance,
+                        player
+                );
             }
 
         });
@@ -133,11 +137,15 @@ public interface ActionListener extends CustomInventory {
      * @param player the player to open the gui for
      */
     default void openFallbackGui(IdentityPlugin instance, Player player) {
+
+        String fallbackIdentifier = instance.getGuiConfigRegistrar().getFallbackGuiIdentifier();
+
         CustomInventory fallbackInventory = instance.getGuiConfigRegistrar()
                 .getPlayerInventories()
-                .get(player.getUniqueId())
-                .get(instance.getGuiConfigRegistrar().getFallbackGuiIdentifier());
-
+                .getInventory(
+                        player.getUniqueId(),
+                        fallbackIdentifier
+                );
 
         Bukkit.getScheduler().runTask(instance, () -> {
             fallbackInventory.show(player);

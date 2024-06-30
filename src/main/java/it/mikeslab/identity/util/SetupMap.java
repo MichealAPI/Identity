@@ -1,11 +1,13 @@
 package it.mikeslab.identity.util;
 
 import it.mikeslab.commons.api.inventory.CustomGui;
-import it.mikeslab.commons.api.inventory.util.CustomInventory;
-import it.mikeslab.commons.api.inventory.util.InventoryMap;
+import it.mikeslab.commons.api.inventory.CustomInventory;
+import it.mikeslab.commons.api.inventory.helper.InventoryMap;
 import it.mikeslab.identity.IdentityPlugin;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * A map that stores the setup inventories for each player
@@ -13,14 +15,12 @@ import java.util.*;
  */
 public class SetupMap extends InventoryMap {
 
-    private static final int EXPIRATION_TIME = 10000; // seconds = n/1000
+    private static final int EXPIRATION_TIME = 1000; // seconds = n/1000
 
     private final IdentityPlugin instance;
     private final Map<UUID, Map<String, Long>> lastAccessMap = new HashMap<>();
 
     public SetupMap(IdentityPlugin instance) {
-        super();
-
         this.instance = instance;
     }
 
@@ -39,56 +39,12 @@ public class SetupMap extends InventoryMap {
         this.setLastAccess(uuid, keyId, -2L);
     }
 
-//    public Map<String, CustomInventory> getInventories(UUID uuid) {
-//
-//        boolean firstAccess = lastAccess == -1L;
-//        boolean expired = System.currentTimeMillis() - lastAccess > EXPIRATION_TIME;
-//
-//        if (!this.containsKey(uuid)) {
-//
-//            // Register the last access time
-//            this.lastAccessMap.put(uuid, System.currentTimeMillis());
-//
-//            return this.load(uuid);
-//        }
-//
-//        if (expired && this.containsKey(uuid)) {
-//
-//            this.get(uuid).values().forEach(customInventory -> {
-//
-//                if(customInventory.getId() == -1) {
-//                    return;
-//                }
-//
-//                System.out.println("\n\n\n\n\n" + customInventory.getInventoryType());
-//
-//                System.out.println(customInventory.getCustomGui());
-//
-//                CustomGui customGui = customInventory.getCustomGui();
-//
-//                customGui.setOwnerUUID(uuid);
-//
-//                if(customGui.getInventory() == null) {
-//                    customGui.generateInventory();
-//                    return;
-//                }
-//
-//                customGui.populateInventory();
-//
-//            });
-//
-//
-//        }
-//
-//
-//        return this.get(uuid);
-//    }
-
     /**
      * Load the setup inventories for a player
+     *
      * @param uuid The player UUID
      */
-    public Map<String, CustomInventory> load(UUID uuid) {
+    public void load(UUID uuid) {
 
         Map<String, CustomInventory> inventoryMap = new HashMap<>(
                 instance.getGuiConfigRegistrar().getGuis() // Recreates a CustomInventory instance for each player
@@ -96,7 +52,6 @@ public class SetupMap extends InventoryMap {
 
         this.put(uuid, inventoryMap);
 
-        return inventoryMap;
     }
 
 
@@ -161,5 +116,9 @@ public class SetupMap extends InventoryMap {
         return this.get(playerUUID).containsKey(arg);
     }
 
+    public void clearInventoryMap() {
+        this.clear();
+        this.lastAccessMap.clear();
+    }
 
 }

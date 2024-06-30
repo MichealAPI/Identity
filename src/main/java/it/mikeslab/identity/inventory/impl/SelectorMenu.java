@@ -1,6 +1,6 @@
 package it.mikeslab.identity.inventory.impl;
 
-import it.mikeslab.commons.api.inventory.util.InventorySettings;
+import it.mikeslab.commons.api.inventory.pojo.GuiContext;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.inventory.action.ActionListener;
 import it.mikeslab.identity.inventory.impl.template.GuiTemplate;
@@ -9,9 +9,8 @@ import java.util.Optional;
 
 public class SelectorMenu extends GuiTemplate implements ActionListener {
 
-
-    public SelectorMenu(final IdentityPlugin instance, InventorySettings settings) {
-        super(instance, settings);
+    public SelectorMenu(final IdentityPlugin instance, GuiContext context) {
+        super(instance, context);
 
         this.injectAction(
                 instance,
@@ -24,5 +23,6 @@ public class SelectorMenu extends GuiTemplate implements ActionListener {
                 )
         );
     }
+
 
 }
