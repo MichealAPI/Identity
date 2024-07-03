@@ -31,3 +31,10 @@
 
 * [Layout](gui/layout.md)
 * [Page System](gui/page-system.md)
+
+## DATABASE
+
+* [Setup your First Connection](database/setup-your-first-connection/README.md)
+  * [MongoDB](database/setup-your-first-connection/mongodb.md)
+  * [SQL](database/setup-your-first-connection/sql.md)
+  * [JSON](database/setup-your-first-connection/json.md)
