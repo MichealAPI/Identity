@@ -3,6 +3,7 @@ package it.mikeslab.identity.event;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.handler.IdentityCacheHandler;
+import it.mikeslab.identity.helper.JoinEventHelper;
 import it.mikeslab.identity.pojo.Identity;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -28,28 +29,15 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
 
-        Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
+        boolean afterAuth = instance.getCustomConfig().getBoolean(ConfigKey.SETUP_AFTER_AUTH);
 
-        this.cacheHandler.getCachedIdentity(
-                playerUUID
-        ).thenAccept((playerFoundIdentity) -> {
+        if(afterAuth) {
+            return;
+        }
 
-            boolean isFound = playerFoundIdentity.isPresent();
-
-            if(!isFound) {
-
-                if(!instance.getCustomConfig().getBoolean(ConfigKey.ON_JOIN_SETUP)) return;
-
-                instance.getSetupCacheHandler().initSetup(
-                                instance,
-                                player
-                        );
-
-            }
-
-        });
-
+        new JoinEventHelper(instance)
+                .getJoinListener()
+                .accept(event.getPlayer());
 
     }
 

@@ -3,8 +3,10 @@ package it.mikeslab.identity.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.bukkit.contexts.OnlinePlayer;
+import it.mikeslab.commons.api.component.ComponentsUtil;
 import it.mikeslab.commons.api.formatter.FormatUtil;
 import it.mikeslab.commons.api.various.message.MessageHelper;
+import it.mikeslab.commons.api.various.message.MessageHelperImpl;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.Permission;
 import it.mikeslab.identity.config.lang.LanguageKey;
@@ -22,7 +24,7 @@ import java.util.UUID;
 public class IdentityCommand extends BaseCommand {
 
     private final IdentityPlugin instance;
-    private final MessageHelper helper;
+    private final MessageHelperImpl helper;
 
     public IdentityCommand(final IdentityPlugin instance) {
 
@@ -69,7 +71,9 @@ public class IdentityCommand extends BaseCommand {
         Player targetPlayer = target.getPlayer();
         UUID targetUUID = targetPlayer.getUniqueId();
 
-        Identity filterIdentity = new Identity(); //todo new Identity(targetUUID);
+        Identity filterIdentity = new Identity(); // this format nulls values
+                                                  // and prevents its empty content
+                                                  // from being queries inside the database
         filterIdentity.setUuid(targetUUID);
 
         Component resetMessage = instance.getLanguage().getComponent(
@@ -125,7 +129,7 @@ public class IdentityCommand extends BaseCommand {
     @Description("Loads a preset from the presets folder")
     @CommandPermission(Permission.IDENTITY_LOAD_PRESET)
     @CommandCompletion("@presets")
-    public void loadPresets(CommandSender sender, String fileName) {
+    public void loadPreset(CommandSender sender, String fileName) {
         instance.getPresetsManager().loadExternalPreset(sender, fileName);
     }
 
@@ -135,9 +139,14 @@ public class IdentityCommand extends BaseCommand {
      * @param targetPlayer The player to kick
      */
     private void kickReset(Player targetPlayer) {
+
+        Component kickMessage = instance.getLanguage().getComponent(LanguageKey.KICK_MESSAGE_RESET_IDENTITY);
+
         Bukkit.getScheduler().runTask(instance, () -> {
             targetPlayer.kickPlayer(
-                    instance.getLanguage().getSerializedString(LanguageKey.KICK_MESSAGE_RESET_IDENTITY)
+                    ComponentsUtil.serialize(kickMessage) // Configurable#getSerializedComponent uses MiniMessage.deserialize instead,
+                                                          // ComponentsUtil#serialize uses MiniMessage's Legacy Section
+                                                          // that is the most suitable for in this case.
             );
         });
     }

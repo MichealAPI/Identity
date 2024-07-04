@@ -7,37 +7,42 @@
 
 #################################################################
 # ------------------------ Source Code ------------------------ #
-# --------------------- github.com/{todo} --------------------- #
+# --------------------- https://t.ly/MJkRd -------------------- #
 #################################################################
 
-kick-message-reset-identity: You have reset your identity
+kick-message-reset-identity: "<#90FF00><bold>Your identity has been reset<br></bold><#DFFFB6>Please rejoin to set a new one"
 
-identity-saved: Your identity has been saved
+identity-saved: "<br><#64E7FF><bold>ɪᴅᴇɴᴛɪᴛʏ<br><reset>Your identity has been saved<br> "
 
-missing-identity-data: You are missing identity data. Please complete the form.
+missing-identity-data: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>You are missing identity data. Please complete the form.<br> "
 
-mandatory-close-attempt: "These inventories are mandatory to be completed: <missing>"
+mandatory-close-attempt: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>These inventories are mandatory to be completed: <missing><br> "
 
-identity-reset-for: "Identity reset for <player>"
-identity-not-found: "Identity not found for <player>"
+identity-reset-for: "<br><#48FF00><bold>ɪᴅᴇɴᴛɪᴛʏ<br><reset>You have reset <player>'s identity successfully<br> "
+identity-not-found: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>Identity not found for player <player><br> "
 
+# Error messages for the anvil/input inventory
 input-too-long: "Input too long. Max length: <max>"
 input-too-short: "Input too short. Min length: <min>"
-input-too-many-words: "Input too many words. Max words: <max>"
-input-too-few-words: "Input too few words. Min words: <min>"
-value-out-of-range: "Value out of range. Min: <min>, Max: <max>"
+input-too-many-words: "Input contains too many words. Max words: <max>"
+input-too-few-words: "Input contains too few words. Min words: <min>"
 input-spam: "Spam detected"
-identity-already-set: "Your identity already set"
-identity-setup-start: "Identity setup started"
 
-unset-value: "Unset value"
+# Error messages for the value inventory
+value-out-of-range: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>Value out of range.<br>Min: <min><br>Max: <max><br> "
 
-reload-success: "Reload successful"
+identity-already-set: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>Your identity is already set<br> "
+identity-setup-start: "<br><#64E7FF><bold>ɪᴅᴇɴᴛɪᴛʏ<br><reset>Let's set up your identity<br> "
 
-reload-kick-cause: "You have been kicked because of the configuration changes, please rejoin"
+unset-value: "Unset value" # Placeholder for unset values
 
-preset-doesnt-exists: "The file <file> does not exist in the presets folder."
-preset-extract-error: "An error occurred while extracting the preset, check the console for more details."
-preset-no-inventory-section: "The preset config does not contain any inventory section."
-preset-invalid-entries: "The preset config contains invalid entries."
-preset-loaded: "The preset <file> has been successfully loaded."
+# Reload-related messages
+reload-success: "<br><#48FF00><bold>ɪᴅᴇɴᴛɪᴛʏ<br><reset>Plugin configurations reloaded correctly<br> "
+reload-kick-cause: "<gold><bold>You have been kicked<br><#FFEC94>Please rejoin to set up your identity according to new configurations"
+
+# Preset loading messages
+preset-doesnt-exist: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>The file '<file>' doesn't exist in the presets folder<br> "
+preset-extract-error: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>Failed to extract the preset. Please check the console for more information<br> "
+preset-no-inventory-section: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>The preset file doesn't contain an inventory section<br> "
+preset-invalid-entries: "<br><red><bold>ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ<br><reset>The preset file contains invalid entries<br> "
+preset-loaded: "<br><#48FF00><bold>ɪᴅᴇɴᴛɪᴛʏ<br><reset>Preset '<file>' loaded successfully<br> "

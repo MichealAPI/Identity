@@ -40,7 +40,7 @@ public class IdentityExpansion extends PlaceholderExpansion {
             identity = loadFromSetupCache(player);
         }
 
-        if(identity.getValues().containsKey(identifier)) {
+        if(identity != null && identity.getValues().containsKey(identifier)) {
             return String.valueOf(identity.getValues().get(identifier));
         }
 

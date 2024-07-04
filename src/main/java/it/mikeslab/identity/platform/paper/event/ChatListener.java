@@ -94,7 +94,9 @@ public class ChatListener implements Listener, ChatRenderer {
 
         return Objects.requireNonNull(ComponentsUtil.getComponent(
                 chatFormat,
-                Placeholder.component("message", message)
+                Placeholder.component("message", message),
+                Placeholder.component("displayname", sourceDisplayName),
+                Placeholder.unparsed("player", player.getName())
         ));
     }
 }

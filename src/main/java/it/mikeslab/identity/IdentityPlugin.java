@@ -3,6 +3,7 @@ package it.mikeslab.identity;
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.commands.CommandReplacements;
 import it.mikeslab.commons.LabCommons;
+import it.mikeslab.commons.api.component.ComponentsUtil;
 import it.mikeslab.commons.api.config.Configurable;
 import it.mikeslab.commons.api.database.Database;
 import it.mikeslab.commons.api.database.async.AsyncDatabase;
@@ -11,6 +12,7 @@ import it.mikeslab.commons.api.database.config.ConfigDatabaseUtil;
 import it.mikeslab.commons.api.formatter.FormatUtil;
 import it.mikeslab.commons.api.inventory.config.ConditionParser;
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
+import it.mikeslab.commons.api.inventory.config.GuiConfigImpl;
 import it.mikeslab.commons.api.inventory.event.GuiListener;
 import it.mikeslab.commons.api.inventory.factory.GuiFactory;
 import it.mikeslab.commons.api.inventory.factory.GuiFactoryImpl;
@@ -25,7 +27,9 @@ import it.mikeslab.identity.command.IdentityCommand;
 import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.event.GuiCloseListener;
+import it.mikeslab.identity.event.GuiOpenEvent;
 import it.mikeslab.identity.event.PlayerListener;
+import it.mikeslab.identity.event.auth.AuthMeListener;
 import it.mikeslab.identity.handler.AntiSpam;
 import it.mikeslab.identity.handler.AntiSpamImpl;
 import it.mikeslab.identity.handler.IdentityCacheHandler;
@@ -92,11 +96,11 @@ public final class IdentityPlugin extends JavaPlugin {
     public void onEnable() {
 
         // Get the API plug-in instance
-        //this.labCommons = new LabCommons();
+        this.labCommons = new LabCommons();
 
-        this.labCommons = (LabCommons) this.getServer()
-                .getPluginManager()
-                .getPlugin("LabCommons");
+        // this.labCommons = (LabCommons) this.getServer()
+        //        .getPluginManager()
+        //        .getPlugin("LabCommons");
 
         this.labCommons.initialize(this);
 
@@ -258,7 +262,7 @@ public final class IdentityPlugin extends JavaPlugin {
 
         this.presetsManager = new PresetsManager(this);
 
-        this.presetsManager.extractDefaults(); // todo rename to extractDefaults
+        this.presetsManager.extractDefaults();
 
     }
 
@@ -280,9 +284,26 @@ public final class IdentityPlugin extends JavaPlugin {
                 this
         );
 
+        if(hasAuthMeReloaded()) {
+            LogUtils.info(
+                    LogUtils.LogSource.PLUGIN,
+                    "AuthMeReloaded detected, hooking into it. If you want to enable the " +
+                            "setup after authentication, set the config option 'settings.setup-after-auth' to true."
+            );
+            this.getServer().getPluginManager().registerEvents(
+                    new AuthMeListener(this),
+                    this
+            );
+        }
+
         // GuiListener
         this.getServer().getPluginManager().registerEvents(
                 new GuiCloseListener(this),
+                this
+        );
+
+        this.getServer().getPluginManager().registerEvents(
+                new GuiOpenEvent(this),
                 this
         );
 
@@ -347,40 +368,35 @@ public final class IdentityPlugin extends JavaPlugin {
      * Reloads the configuration files and inventories
      */
     public void reload() {
+        // Reload configuration files
 
-        try {
-            // Reload configuration files
+        this.language = this.getLanguage().reload();
+        this.customConfig = this.getCustomConfig().reload();
+        this.antiSpamConfig = this.getAntiSpamConfig().reload();
 
-            this.language = this.getLanguage().reload();
-            this.customConfig = this.getCustomConfig().reload();
-            this.antiSpamConfig = this.getAntiSpamConfig().reload();
+        // Kick in-setup-players
+        this.getServer().getOnlinePlayers().forEach(
+                player -> {
 
-            // Kick in-setup-players
-            this.getServer().getOnlinePlayers().forEach(
-                    player -> {
+                    UUID uuid = player.getUniqueId();
 
-                        UUID uuid = player.getUniqueId();
+                    if (this.getSetupCacheHandler().getIdentity(uuid) != null) {
 
-                        if (this.getSetupCacheHandler().getIdentity(uuid) != null) {
+                        this.getSetupCacheHandler().remove(uuid);
 
-                            this.getSetupCacheHandler().remove(uuid);
-
-                            Bukkit.getScheduler().runTask(this, () -> {
-                                player.kickPlayer(
-                                        this.getLanguage().getSerializedString(LanguageKey.RELOAD_KICK_CAUSE)
-                                );
-                            });
-                        }
+                        Bukkit.getScheduler().runTask(this, () -> {
+                            player.kickPlayer(
+                                    ComponentsUtil.serialize(
+                                            this.getLanguage().getComponent(LanguageKey.RELOAD_KICK_CAUSE)
+                                    )
+                            );
+                        });
                     }
-            );
+                }
+        );
 
-            // Reload inventories
-            this.initInventories();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        // Reload inventories
+        this.initInventories();
     }
 
 
@@ -402,6 +418,14 @@ public final class IdentityPlugin extends JavaPlugin {
             );
             this.platformLoader = new PlatformLoaderSpigotImpl(this);
         }
+    }
+
+    /**
+     * Checks if AuthMeReloaded is enabled
+     * @return true if AuthMeReloaded is enabled
+     */
+    private boolean hasAuthMeReloaded() {
+        return Bukkit.getPluginManager().isPluginEnabled("AuthMeReloaded");
     }
 
 

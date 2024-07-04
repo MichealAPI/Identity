@@ -74,6 +74,12 @@ public abstract class GuiTemplate implements CustomInventory {
                         )
         );
 
+        // Register the open and close actions
+        guiConfig.registerOpenCloseActions(
+                this.getId(),
+                getGuiContext().getGuiFactory()
+        );
+
     }
 
 }

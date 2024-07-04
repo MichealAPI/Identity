@@ -1,8 +1,10 @@
 package it.mikeslab.identity.event;
 
+import it.mikeslab.commons.api.inventory.CustomGui;
 import it.mikeslab.commons.api.inventory.CustomInventory;
 import it.mikeslab.commons.api.inventory.InventoryType;
-import it.mikeslab.commons.api.inventory.event.GuiCloseEvent;
+import it.mikeslab.commons.api.inventory.event.GuiEvent;
+import it.mikeslab.commons.api.inventory.util.action.ActionHandler;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.lang.LanguageKey;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
@@ -26,16 +28,19 @@ public class GuiCloseListener implements Listener {
     private final IdentityPlugin instance;
 
     @EventHandler
-    public void onGuiClose(GuiCloseEvent event) {
+    public void onGuiClose(GuiEvent event) {
 
-        Player player = (Player) event.getEvent().getPlayer();
+        if(event.getWhen() != ActionHandler.ActionEvent.CLOSE) return;
+
+        Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        int closedGuiId = event.getClosedGui().getId();
+        CustomGui customGui = event.getGui();
+        int closedGuiId = customGui.getId();
 
         if(instance.getGuiFactory().getCustomGui(closedGuiId) == null) return;
 
-        if(event.getClosedGui().getGuiFactory() != instance.getGuiFactory()) return;
+        if(customGui.getGuiFactory() != instance.getGuiFactory()) return;
 
         GuiConfigRegistrar registrar = instance.getGuiConfigRegistrar();
 
@@ -59,12 +64,7 @@ public class GuiCloseListener implements Listener {
                 return;
             }
 
-
             checkOpeningNewCustomGui(player, () -> {
-
-                // do this if it is not opening a custom gui within 2 (//todo 1?) milliseconds
-
-                // todo is mandatory and is completed return check? Is it still useful?
 
                 Bukkit.getScheduler().runTask(
                         instance,
@@ -79,15 +79,17 @@ public class GuiCloseListener implements Listener {
 
     /**
      * Manage the saving of the inventory
-     * @param event The {@link org.bukkit.event.inventory.InventoryCloseEvent} event
+     * @param event The event
      * @param fallbackGui The fallback gui
      * @param registrar The registrar
      */
-    private void manageSaving(GuiCloseEvent event, CustomInventory fallbackGui, GuiConfigRegistrar registrar) {
+    private void manageSaving(GuiEvent event, CustomInventory fallbackGui, GuiConfigRegistrar registrar) {
 
         boolean isMandatoryFieldMissing = false;
 
-        UUID playerUUID = event.getEvent().getPlayer().getUniqueId();
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+        CustomGui gui = event.getGui();
 
         List<String> missingInventoriesDisplayName = new ArrayList<>();
 
@@ -106,26 +108,39 @@ public class GuiCloseListener implements Listener {
 
         if(isMandatoryFieldMissing) {
 
-            Player player = (Player) event.getEvent().getPlayer();
-
-            checkOpeningNewCustomGui(player, () -> {
+            Runnable negativeRunnable = () -> {
                 Bukkit.getScheduler().runTask(
                         instance,
                         () -> {
 
                             instance.getMessageHelper().sendMessage(player,
-                                                    LanguageKey.MANDATORY_CLOSE_ATTEMPT,
-                                                    Placeholder.unparsed(
-                                                            "missing",
-                                                            String.join(", ", missingInventoriesDisplayName)
-                                                    )
-                                            );
+                                    LanguageKey.MANDATORY_CLOSE_ATTEMPT,
+                                    Placeholder.unparsed(
+                                            "missing",
+                                            String.join(", ", missingInventoriesDisplayName)
+                                    )
+                            );
 
                             fallbackGui.show(player);
                         }
                 );
-            });
+            };
+
+            this.checkOpeningNewCustomGui(player, negativeRunnable);
+
+            return;
         }
+
+
+        // Run closing actions
+        instance.getGuiFactory()
+                .getActionHandler()
+                .handleActions(
+                        gui.getId(),
+                        ActionHandler.ActionEvent.CLOSE,
+                        event
+                );
+
     }
 
     void checkOpeningNewCustomGui(Player player, Runnable notCustomGuiRunnable) {

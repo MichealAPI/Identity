@@ -8,6 +8,7 @@ import it.mikeslab.commons.api.component.ComponentsUtil;
 import it.mikeslab.commons.api.inventory.CustomInventory;
 import it.mikeslab.commons.api.inventory.pojo.action.GuiAction;
 import it.mikeslab.commons.api.inventory.util.action.ActionRegistrar;
+import it.mikeslab.commons.api.various.util.XPotion;
 import it.mikeslab.commons.api.various.util.XSound;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.util.SetupMap;
@@ -15,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.UUID;
 
@@ -38,6 +41,7 @@ public class ActionRegistrarImpl implements ActionRegistrar {
         actionsMap.put("title", sendTitleToPlayer());
         actionsMap.put("sound", playSoundForPlayer());
         actionsMap.put("close", closeInventory());
+        actionsMap.put("potion", potionEffect());
 
         return actionsMap;
 
@@ -124,16 +128,35 @@ public class ActionRegistrarImpl implements ActionRegistrar {
         return new GuiAction((ev, args) -> {
 
             Player target = ev.getWhoClicked();
-            Location location = target.getLocation();
 
-            XSound xSound = XSound.matchXSound(args).orElse(null);
+            XSound.Record xSound = XSound.parse(args);
 
             if(xSound == null) {
                  return;
             }
 
-            xSound.play(location, 1, 1);
+            xSound.soundPlayer()
+                    .forPlayers(target)
+                    .play();
         });
+    }
+
+    private GuiAction potionEffect() {
+        return new GuiAction((ev, args) -> {
+
+            // Format: Potion, Duration (in seconds), Amplifier (level) [%chance]
+            // WEAKNESS, 30, 1
+            // SLOWNESS 200 10
+            // 1, 10000, 100 %50
+            XPotion.Effect xPotion = XPotion.parseEffect(args);
+
+            if(xPotion == null) return;
+
+            Player target = ev.getWhoClicked();
+            target.addPotionEffect(xPotion.getEffect());
+
+        });
+
     }
 
     private GuiAction closeInventory() {

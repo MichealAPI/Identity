@@ -22,6 +22,9 @@ settings:
   animation-interval: 2 # The interval in ticks between each animation frame
   on-join-setup: true # If true, the player will be prompted to set up his identity on join
 
+  # AuthMeReloaded integration
+  setup-after-auth: false # If true, the player will be prompted to set up his identity after authentication.
+
 # Follow the instructions on the documentation to set up the database
 database:
   type: JSON # SQL, JSON or MONGODB
@@ -40,7 +43,13 @@ database:
 # Identity uses MiniMessage color formatting.
 # Details on its usage can be found at https://docs.advntr.dev/minimessage/format.html
 # It's highly recommended to only put here mandatory inventories placeholders to prevent empty results
-chat-format: "<#00FF78>%identity_first-inventory% %identity_second-inventory% %identity_third-inventory% <gray>%player_name%<blue>: <white><message>"
+#
+# Default placeholders:
+#  <player>: The player's name
+#  <displayname>: The player's display name
+#  <message>: The message sent by the player
+#
+chat-format: "<#00FF78>%identity_first-inventory% %identity_second-inventory% %identity_third-inventory% <gray><displayname><blue>: <white><message>"
 
 kick-if-saving-error: true
 

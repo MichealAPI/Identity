@@ -23,7 +23,9 @@ public enum ConfigKey implements ConfigurableEnum {
 
     ANIMATION_INTERVAL("settings.animation-interval", 2),
 
-    ON_JOIN_SETUP("settings.on-join-setup", true),;
+    ON_JOIN_SETUP("settings.on-join-setup", true),
+
+    SETUP_AFTER_AUTH("settings.setup-after-auth", true),;
 
     private final String path;
     private final Object defaultValue;

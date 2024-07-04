@@ -3,6 +3,7 @@ package it.mikeslab.identity.preset;
 import it.mikeslab.commons.api.inventory.util.config.FileUtil;
 import it.mikeslab.commons.api.logger.LogUtils;
 import it.mikeslab.identity.IdentityPlugin;
+import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
 import it.mikeslab.identity.util.ZipUtil;
 import lombok.RequiredArgsConstructor;
@@ -134,6 +135,10 @@ public class PresetsHelper {
         instance.getCustomConfig()
                 .getConfiguration()
                 .set(INVENTORIES_SECTION, config.getConfigurationSection(INVENTORIES_SECTION));
+
+        instance.getCustomConfig()
+                .getConfiguration()
+                .set(ConfigKey.CHAT_FORMAT.getPath(), config.getString(ConfigKey.CHAT_FORMAT.getPath()));
 
         instance.getCustomConfig().save();
 

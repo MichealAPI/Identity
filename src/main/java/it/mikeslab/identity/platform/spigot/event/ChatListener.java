@@ -90,7 +90,12 @@ public class ChatListener implements Listener {
         }
 
         return ComponentsUtil.serialize(
-                ComponentsUtil.getComponent(chatFormat, Placeholder.unparsed("message", message))
+                ComponentsUtil.getComponent(
+                        chatFormat,
+                        Placeholder.unparsed("message", message),
+                        Placeholder.unparsed("displayname", source.getDisplayName()),
+                        Placeholder.unparsed("player", source.getName())
+                )
         );
 
     }
