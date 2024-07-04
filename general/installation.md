@@ -22,7 +22,7 @@ This is a very mechanical procedure, as illustrated by the Name, Gender & Age pr
 3.  To create a new Identity inventory configuration:
 
     1. _Follow the provided guidelines._
-    2. _If you need assistance, visit the Inventory Configuration section._
+    2. _If you need assistance, visit the_ [_Inventory Configuration_](../config/introduction.md) _section._
 
     Ensure all steps are completed to properly set up your configuration. For further help, consult the relevant documentation.
 4. Next step requires you to set up your title. This is a very mechanical procedure. Firstly, add the `<white>` color, then insert a random amount of negative space characters, around 40px. Finally, add the inventory-associated emoji.

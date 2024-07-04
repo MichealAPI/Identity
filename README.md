@@ -4,6 +4,20 @@ description: >-
   can create as many inventories and customizations as you want.
 cover: .gitbook/assets/identity-thumbnail.png
 coverY: 0
+layout:
+  cover:
+    visible: true
+    size: full
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: true
 ---
 
 # 🌟 Identity Wiki
