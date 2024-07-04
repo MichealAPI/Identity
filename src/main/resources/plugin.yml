@@ -4,7 +4,7 @@ main: it.mikeslab.identity.IdentityPlugin
 api-version: '1.16'
 depend: [PlaceholderAPI]
 softdepend:
-  - AuthMeReloaded
+  - AuthMe
 
 author: MikesLab
 description: 'A simple plug-in to fully customize your players identity.'

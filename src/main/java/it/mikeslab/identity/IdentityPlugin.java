@@ -425,7 +425,7 @@ public final class IdentityPlugin extends JavaPlugin {
      * @return true if AuthMeReloaded is enabled
      */
     private boolean hasAuthMeReloaded() {
-        return Bukkit.getPluginManager().isPluginEnabled("AuthMeReloaded");
+        return Bukkit.getPluginManager().isPluginEnabled("AuthMe");
     }
 
 

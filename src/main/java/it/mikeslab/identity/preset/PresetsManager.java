@@ -111,6 +111,8 @@ public class PresetsManager {
             return;
         }
 
+        this.createPresetsFolder();
+
         String subFolder = DEFAULT_FOLDER + File.separator;
 
         extractConfiguration(subFolder + "input.yml");
@@ -132,6 +134,11 @@ public class PresetsManager {
 
     }
 
+    private void createPresetsFolder() {
+        File presetsFolder = new File(instance.getDataFolder(), PresetsHelper.PRESETS_FOLDER_NAME);
+        if (!presetsFolder.exists())
+            presetsFolder.mkdir();
+    }
 
     private File extractConfiguration(String fileName) {
         File file = new File(instance.getDataFolder(), fileName);
