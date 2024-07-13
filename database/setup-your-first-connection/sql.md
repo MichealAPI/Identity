@@ -14,12 +14,12 @@ Follow the format and create your own MySQL Connection string:
 database:
   type: SQL
   # Format: protocol//[hosts][/database][?properties]
-  uri: "jdbc:mysql://127.0.0.1:3307/api_testunit" # Example Connection String
+  uri: "jdbc:mysql://127.0.0.1:3307/" # Example Connection String
   password: ""
   username: "root" # It's recommended NOT to use the root user, 
                    # please create one with writing and reading privileges
   table: "identities" # Auto-Generated if not exists
-  database: ""
+  database: "api_testunit"
 ```
 
 <figure><img src="../../.gitbook/assets/Mysql_logo.png" alt=""><figcaption></figcaption></figure>
