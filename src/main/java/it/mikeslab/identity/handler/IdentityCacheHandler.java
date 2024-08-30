@@ -73,8 +73,6 @@ public class IdentityCacheHandler {
         Identity identityFilter = new Identity(); // todo new Identity(targetUUID);, but it requires values to be null!
         identityFilter.setUuid(uuid);
 
-        System.out.println("Looking for: " + identityFilter.toString());
-
         return this.identityDatabase.findOne(identityFilter);
 
     }

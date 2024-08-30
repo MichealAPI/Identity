@@ -27,11 +27,11 @@ import java.util.UUID;
  *
  * @see ConfigKey#ENABLE_CHAT_FORMATTER
  */
-public class ChatListener implements Listener, ChatRenderer {
+public class ChatListener_1_18_R1 implements Listener, ChatRenderer {
 
     private final IdentityPlugin instance;
 
-    public ChatListener(final IdentityPlugin instance) {
+    public ChatListener_1_18_R1(final IdentityPlugin instance) {
         this.instance = instance;
 
         if (!PlatformUtil.isPaper()) {
@@ -91,6 +91,7 @@ public class ChatListener implements Listener, ChatRenderer {
             chatFormat = PlaceholderAPI.setPlaceholders(player, chatFormat);
 
         }
+
 
         return Objects.requireNonNull(ComponentsUtil.getComponent(
                 chatFormat,

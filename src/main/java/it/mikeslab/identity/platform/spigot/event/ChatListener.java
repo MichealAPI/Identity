@@ -29,9 +29,11 @@ public class ChatListener implements Listener {
     public ChatListener(final IdentityPlugin instance) {
         this.instance = instance;
 
-        if(!PlatformUtil.isSpigot() && !PlatformUtil.isUnknown()) {
+        // We're now using the Spigot version of things as a default solution
+
+        /* if(!PlatformUtil.isSpigot() && !PlatformUtil.isUnknown()) {
             throw new UnsupportedOperationException("Unsupported platform for Spigot ChatListener.");
-        }
+        } */
 
     }
 

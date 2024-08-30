@@ -17,6 +17,7 @@
 
 # Settings (DO NOT TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING)
 settings:
+  debug: false # If true, the plugin will log debug messages
   mongo-info-logging: false # Sets the logging level to >WARNING for MongoDB operations
   extract-defaults: true # Extracts default files to the plugin folder
   animation-interval: 2 # The interval in ticks between each animation frame
@@ -49,7 +50,7 @@ database:
 #  <displayname>: The player's display name
 #  <message>: The message sent by the player
 #
-chat-format: "<#00FF78>%identity_first-inventory% %identity_second-inventory% %identity_third-inventory% <gray><displayname><blue>: <white><message>"
+chat-format: "<#00FF78>%identity_first_inventory% %identity_second_inventory% %identity_third_inventory% <gray><displayname><blue>: <white><message>"
 
 kick-if-saving-error: true
 
@@ -82,13 +83,13 @@ guis:
   # Other settings can be found in the documentation and
   # can be applied only inside the specific inventory file
 
-  first-inventory:
+  first_inventory:
     path: "inventories/selector.yml"
     type: SELECTOR
     mandatory: true
     displayName: "First Inventory"
 
-  second-inventory:
+  second_inventory:
     path: "inventories/value.yml"
     type: VALUE
     mandatory: true
@@ -97,13 +98,13 @@ guis:
     max: 20
     min: -10
 
-  third-inventory:
+  third_inventory:
     path: "inventories/input.yml"
     type: INPUT
     mandatory: true
     displayName: "Third Inventory"
     # Other settings are inside the inventory file
 
-  main-inventory:
+  main_inventory:
     path: "inventories/main.yml"
     type: MAIN

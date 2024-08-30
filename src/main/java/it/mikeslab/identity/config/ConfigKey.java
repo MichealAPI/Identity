@@ -25,7 +25,9 @@ public enum ConfigKey implements ConfigurableEnum {
 
     ON_JOIN_SETUP("settings.on-join-setup", true),
 
-    SETUP_AFTER_AUTH("settings.setup-after-auth", true),;
+    SETUP_AFTER_AUTH("settings.setup-after-auth", true),
+
+    DEBUG_MODE("settings.debug", false),;
 
     private final String path;
     private final Object defaultValue;

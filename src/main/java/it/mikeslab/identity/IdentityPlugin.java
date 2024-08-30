@@ -52,14 +52,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 @Getter
 public final class IdentityPlugin extends JavaPlugin {
+
+    public static final Set<String> INVENTORY_IDENTIFIERS = new HashSet<>();
 
     private AsyncDatabase<Identity> identityDatabase;
     private GuiFactory guiFactory;
@@ -114,6 +114,8 @@ public final class IdentityPlugin extends JavaPlugin {
 
         FormatUtil.printStartupInfos(this, audiences, "9C00FF");
 
+        this.initInventories();
+
         initDatabase().thenAccept(isConnected -> {
             if(isConnected) {
                 LogUtils.info(
@@ -128,7 +130,7 @@ public final class IdentityPlugin extends JavaPlugin {
             }
         });
 
-        this.initInventories();
+
         this.initCache();
 
         this.loadPlatform();
@@ -156,14 +158,12 @@ public final class IdentityPlugin extends JavaPlugin {
         this.identityDatabase.disconnect().thenAccept(
                 isDisconnected -> {
                     if(isDisconnected) {
-                        LogUtils.log(
-                                Level.INFO,
+                        LogUtils.info(
                                 LogUtils.LogSource.DATABASE,
                                 "Disconnected from database."
                         );
                     } else {
-                        LogUtils.log(
-                                Level.WARNING,
+                        LogUtils.warn(
                                 LogUtils.LogSource.DATABASE,
                                 "Failed to disconnect from database."
                         );
@@ -196,6 +196,10 @@ public final class IdentityPlugin extends JavaPlugin {
         );
 
         this.guiConfigRegistrar.register();
+
+        INVENTORY_IDENTIFIERS.addAll(
+                guiConfigRegistrar.getInventoryKeys()
+        );
 
         this.guiFactory.setActionHandler(actionHandler);
         this.guiFactory.setConditionParser(conditionParser);
@@ -259,6 +263,7 @@ public final class IdentityPlugin extends JavaPlugin {
                 .newInstance()
                 .loadConfiguration(antiSpamConfigFile);
 
+        this.checkDebugMode();
 
         this.presetsManager = new PresetsManager(this);
 
@@ -363,12 +368,21 @@ public final class IdentityPlugin extends JavaPlugin {
         }
     }
 
+    public void checkDebugMode() {
+        if(this.getCustomConfig().getBoolean(ConfigKey.DEBUG_MODE)) {
+            LabCommons.enableDebuggingMode();
+        } else {
+            LabCommons.disableDebuggingMode();
+        }
+    }
 
     /**
      * Reloads the configuration files and inventories
      */
     public void reload() {
         // Reload configuration files
+
+        this.checkDebugMode();
 
         this.language = this.getLanguage().reload();
         this.customConfig = this.getCustomConfig().reload();

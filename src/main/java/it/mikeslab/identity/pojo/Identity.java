@@ -2,12 +2,12 @@ package it.mikeslab.identity.pojo;
 
 
 import it.mikeslab.commons.api.database.SerializableMapConvertible;
+import it.mikeslab.commons.api.logger.LogUtils;
+import it.mikeslab.identity.IdentityPlugin;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -27,8 +27,17 @@ public class Identity implements SerializableMapConvertible<Identity> {
 
         Identity identity = new Identity();
 
-        identity.getValues().putAll(map);
-        identity.getValues().remove(getIdentifierName());
+        if (map != null) {
+
+            identity.setValues(new HashMap<>(map));
+
+            LogUtils.debug(
+                    LogUtils.LogSource.DATABASE,
+                    "Retrieved values from Database: " + map.toString()
+            );
+
+            identity.getValues().remove(this.getUniqueIdentifierName());
+        }
 
         return identity;
     }
@@ -40,22 +49,36 @@ public class Identity implements SerializableMapConvertible<Identity> {
 
         Map<String, Object> map = new HashMap<>();
 
-        map.put(getIdentifierName(), uuid.toString());
+        map.put(
+                this.getUniqueIdentifierName(),
+                this.getUniqueIdentifierValue()
+        );
 
-        map.putAll(values);
+        if (values != null && !values.isEmpty()) {
+            LogUtils.debug(
+                    LogUtils.LogSource.DATABASE,
+                    "Populating a map based on a Identity POJO instance which contains: " + values.toString()
+            );
+            map.putAll(values);
+        }
 
         return map;
 
     }
 
     @Override
-    public String getIdentifierName() {
+    public String getUniqueIdentifierName() {
         return "uuid";
     }
 
     @Override
-    public Object getIdentifierValue() {
+    public Object getUniqueIdentifierValue() {
         return uuid.toString();
+    }
+
+    @Override
+    public Set<String> identifiers() {
+        return IdentityPlugin.INVENTORY_IDENTIFIERS;
     }
 
 }

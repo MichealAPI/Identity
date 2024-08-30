@@ -19,10 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class GuiConfigRegistrar {
@@ -248,6 +245,13 @@ public class GuiConfigRegistrar {
 
         }
 
+    }
+
+    public Set<String> getInventoryKeys() {
+        return cache.entrySet().stream()
+                .filter(entry -> entry.getValue().getInventoryType() != InventoryType.MAIN)
+                .map(Map.Entry::getKey)
+                .collect(HashSet::new, HashSet::add, HashSet::addAll);
     }
 
     /**
