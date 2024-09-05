@@ -12,7 +12,6 @@ import it.mikeslab.commons.api.database.config.ConfigDatabaseUtil;
 import it.mikeslab.commons.api.formatter.FormatUtil;
 import it.mikeslab.commons.api.inventory.config.ConditionParser;
 import it.mikeslab.commons.api.inventory.config.GuiConfig;
-import it.mikeslab.commons.api.inventory.config.GuiConfigImpl;
 import it.mikeslab.commons.api.inventory.event.GuiListener;
 import it.mikeslab.commons.api.inventory.factory.GuiFactory;
 import it.mikeslab.commons.api.inventory.factory.GuiFactoryImpl;
@@ -20,9 +19,7 @@ import it.mikeslab.commons.api.inventory.util.action.ActionHandler;
 import it.mikeslab.commons.api.inventory.util.action.ActionHandlerImpl;
 import it.mikeslab.commons.api.inventory.util.action.ActionRegistrar;
 import it.mikeslab.commons.api.logger.LogUtils;
-import it.mikeslab.commons.api.various.message.MessageHelper;
 import it.mikeslab.commons.api.various.message.MessageHelperImpl;
-import it.mikeslab.commons.api.various.platform.PlatformUtil;
 import it.mikeslab.identity.command.IdentityCommand;
 import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.config.lang.LanguageKey;
@@ -39,7 +36,6 @@ import it.mikeslab.identity.inventory.config.GuiConfigRegistrar;
 import it.mikeslab.identity.inventory.config.condition.ConditionParserImpl;
 import it.mikeslab.identity.papi.IdentityExpansion;
 import it.mikeslab.identity.platform.PlatformLoader;
-import it.mikeslab.identity.platform.paper.PlatformLoaderPaperImpl;
 import it.mikeslab.identity.platform.spigot.PlatformLoaderSpigotImpl;
 import it.mikeslab.identity.pojo.Identity;
 import it.mikeslab.identity.preset.PresetsHelper;
@@ -54,7 +50,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 
 @Getter
 public final class IdentityPlugin extends JavaPlugin {
@@ -416,6 +411,7 @@ public final class IdentityPlugin extends JavaPlugin {
 
     public void loadPlatform() {
 
+        /*
         if(PlatformUtil.isPaper()) {
             LogUtils.info(
                     LogUtils.LogSource.PLUGIN,
@@ -432,6 +428,14 @@ public final class IdentityPlugin extends JavaPlugin {
             );
             this.platformLoader = new PlatformLoaderSpigotImpl(this);
         }
+         */
+
+        LogUtils.info(
+                LogUtils.LogSource.PLUGIN,
+                "Loading platform support for Spigot."
+        );
+        this.platformLoader = new PlatformLoaderSpigotImpl(this);
+
     }
 
     /**
