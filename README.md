@@ -50,16 +50,18 @@ Identity is a Minecraft plugin that allows you to customize your player's identi
 
 Maven:
 ```xml
-        <repository>
-            <id>mikeslab</id>
-            <url>https://repo.mikeslab.it/snapshots/</url>
-        </repository>
-        
-        <dependency>
-            <groupId>it.mikeslab</groupId>
-            <artifactId>Identity</artifactId>
-            <version>{VERSION}</version>
-        </dependency>
+<repository>
+    <id>mikeslab</id>
+    <url>https://repo.mikeslab.it/snapshots/</url>
+</repository>
+```
+
+```xml
+<dependency>
+    <groupId>it.mikeslab</groupId>
+    <artifactId>Identity</artifactId>
+    <version>{VERSION}</version>
+</dependency>
 ```
 
 For other build tools, please refer to the [repository](https://repo.mikeslab.it/snapshots/).
