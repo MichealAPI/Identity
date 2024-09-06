@@ -1,0 +1,30 @@
+name: Identity
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: 8
+
+      - name: Removing default settings xml
+        run: rm /home/runner/.m2/settings.xml
+
+      - uses: s4u/maven-settings-action@v3.0.0
+        with:
+          servers: |
+            [{
+              "id": "reposilite-repository",
+              "username": "${{ secrets.MAVEN_USER }}",
+              "password": "${{ secrets.MAVEN_SECRET }}"
+            }]
+      - name: Publish with Maven
+        run: mvn -DRunningOnCi=true clean deploy --file pom.xml --batch-mode
