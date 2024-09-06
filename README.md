@@ -46,8 +46,28 @@ Identity is a Minecraft plugin that allows you to customize your player's identi
 -   Source code included
 -   and much, much more!
 
+## API
+
+Maven:
+```xml
+        <repository>
+            <id>mikeslab</id>
+            <url>https://repo.mikeslab.it/snapshots/</url>
+        </repository>
+        
+        <dependency>
+            <groupId>it.mikeslab</groupId>
+            <artifactId>Identity</artifactId>
+            <version>{VERSION}</version>
+        </dependency>
+```
+
+For other build tools, please refer to the [repository](https://repo.mikeslab.it/snapshots/).
+
 ## Support
-If you need support using this plug-in and you have a license, please refer to the [documentation](https://mikeslab.gitbook.io). If you still need help, don't hesitate to contact us on [Discord](https://discord.mikeslab.it).
+If you need support using this plug-in,
+and you have a license, please refer to the [documentation](https://mikeslab.gitbook.io).
+If you still need help, don't hesitate to contact us on [Discord](https://discord.mikeslab.it).
 
 ## License
 

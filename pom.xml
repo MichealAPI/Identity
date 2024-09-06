@@ -16,6 +16,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <name>MikesLab Maven Repository</name>
+            <id>reposilite-repository</id>
+            <url>https://repo.mikeslab.it/snapshots/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
