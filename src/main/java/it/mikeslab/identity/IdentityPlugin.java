@@ -91,13 +91,9 @@ public final class IdentityPlugin extends JavaPlugin {
     public void onEnable() {
 
         // Get the API plug-in instance
-        this.labCommons = new LabCommons();
-
-        // this.labCommons = (LabCommons) this.getServer()
-        //        .getPluginManager()
-        //        .getPlugin("LabCommons");
-
-        this.labCommons.initialize(this);
+        this.labCommons = (LabCommons) this.getServer()
+                .getPluginManager()
+                .getPlugin("LabCommons");
 
         this.audiences = BukkitAudiences.create(this);
 
@@ -145,7 +141,7 @@ public final class IdentityPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
 
-        this.labCommons.disable();
+        // this.labCommons.disable();
 
         // Prevent memory leaks
 

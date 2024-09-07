@@ -19,6 +19,7 @@
 	<a href="https://ko-fi.com/mikeslab">
 		<img alt="Ko-Fi Badge" src="https://img.shields.io/badge/Donate-Ko_Fi-red">
 	</a>
+    <img alt="Repository" src="https://repo.mikeslab.it/api/badge/latest/releases/com/reposilite?color=40c14a&name=Reposilite&prefix=v&filter=3"
 	<img alt="Powered by MongoDB" src="https://img.shields.io/badge/Powered By-MongoDB-dark_green">
 	<img alt="Powered by MongoDB" src="https://img.shields.io/badge/Powered By-MySQL-blue">
 </p>
@@ -64,7 +65,7 @@ Maven:
 </dependency>
 ```
 
-For other build tools, please refer to the [repository](https://repo.mikeslab.it/snapshots/).
+For other build tools, please refer to the [repository](https://repo.mikeslab.it/#/snapshots/).
 
 ## Support
 If you need support using this plug-in,
