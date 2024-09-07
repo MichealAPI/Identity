@@ -2,7 +2,7 @@ name: Identity
 version: '${project.version}'
 main: it.mikeslab.identity.IdentityPlugin
 api-version: '1.16'
-depend: [PlaceholderAPI, LabCommons]
+depend: [PlaceholderAPI]
 softdepend:
   - AuthMe
 
