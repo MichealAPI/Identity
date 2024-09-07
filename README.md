@@ -64,7 +64,7 @@ Maven:
 </dependency>
 ```
 
-For other build tools, please refer to the [repository](https://repo.mikeslab.it/snapshots/).
+For other build tools, please refer to the [repository](https://repo.mikeslab.it/#/snapshots/).
 
 ## Support
 If you need support using this plug-in,

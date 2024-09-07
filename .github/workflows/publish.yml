@@ -27,4 +27,4 @@ jobs:
               "password": "${{ secrets.MAVEN_SECRET }}"
             }]
       - name: Publish with Maven
-        run: mvn -DRunningOnCi=true clean deploy --file pom.xml --batch-mode
+        run: mvn clean deploy --file pom.xml --batch-mode
