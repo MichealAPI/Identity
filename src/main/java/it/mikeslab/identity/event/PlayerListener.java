@@ -61,7 +61,7 @@ public class PlayerListener implements Listener {
             // todo evaluate if this is necessary, removing on quit
             instance.getGuiConfigRegistrar()
                     .getPlayerInventories()
-                    .remove(playerUUID);
+                    .destroy(playerUUID);
         }
 
     }

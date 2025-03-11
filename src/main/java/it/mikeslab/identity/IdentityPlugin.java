@@ -97,13 +97,13 @@ public final class IdentityPlugin extends JavaPlugin {
 
         this.audiences = BukkitAudiences.create(this);
 
-        this.messageHelper = new MessageHelperImpl(audiences);
+        this.messageHelper = new MessageHelperImpl();
 
         this.initConfig();
 
         this.setMongoLoggingToInfo();
 
-        FormatUtil.printStartupInfos(this, audiences, "9C00FF");
+        FormatUtil.printStartupInfos(this, "9C00FF");
 
         this.initInventories();
 
@@ -232,25 +232,27 @@ public final class IdentityPlugin extends JavaPlugin {
     private void initConfig() {
 
         // default config
-        File configFile = new File(getDataFolder(), "config.yml");
+        String languageConfigFileName = "language.yml";
+        String configFileName = "config.yml";
+        String antiSpamConfigFileName = "antispam.yml";
 
-        File languageConfigFile = new File(getDataFolder(), "language.yml");
+        save(languageConfigFileName, false);
+        save(configFileName, false);
+        save(antiSpamConfigFileName, false);
 
-        File antiSpamConfigFile = new File(getDataFolder(), "antispam.yml");
+        this.language = LabCommons.registerConfigurable(
+                this.getDataFolder(),
+                languageConfigFileName,
+                LanguageKey.class
+        );
 
-        save(languageConfigFile.getName(), false);
-        save(configFile.getName(), false);
-        save(antiSpamConfigFile.getName(), false);
+        this.customConfig = LabCommons.registerConfigurable(
+                this.getDataFolder(),
+                configFileName,
+                ConfigKey.class
+        );
 
-        this.language = LabCommons.registerConfigurable(LanguageKey.class)
-                .loadConfiguration(languageConfigFile);
-
-        this.customConfig = LabCommons.registerConfigurable(ConfigKey.class)
-                .loadConfiguration(configFile);
-
-        this.antiSpamConfig = Configurable
-                .newInstance()
-                .loadConfiguration(antiSpamConfigFile);
+        this.antiSpamConfig = Configurable.newInstance(this.getDataFolder(), antiSpamConfigFileName);
 
         this.checkDebugMode();
 

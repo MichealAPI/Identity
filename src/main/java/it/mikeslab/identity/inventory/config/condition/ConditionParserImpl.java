@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.function.Supplier;
 
+// todo Move to LabCommons
 public class ConditionParserImpl implements ConditionParser {
 
     @Override

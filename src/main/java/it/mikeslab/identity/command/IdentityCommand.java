@@ -35,7 +35,7 @@ public class IdentityCommand extends BaseCommand {
 
     @Default
     public void defaultCommand(CommandSender sender) {
-        FormatUtil.sendRunningInfos(instance.getAudiences().sender(sender), instance, "9C00FF");
+        FormatUtil.sendRunningInfos(sender, instance, "9C00FF");
     }
 
     @Subcommand("setup")

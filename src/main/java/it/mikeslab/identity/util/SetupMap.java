@@ -30,7 +30,7 @@ public class SetupMap extends InventoryMap {
      * @param uuid The player UUID
      */
     public void forceExpiration(UUID uuid) {
-        for (String keyId : this.get(uuid).keySet()) {
+        for (String keyId : this.getCachedInventories(uuid).keySet()) {
             this.forceExpiration(uuid, keyId);
         }
     }
@@ -50,7 +50,7 @@ public class SetupMap extends InventoryMap {
                 instance.getGuiConfigRegistrar().getGuis() // Recreates a CustomInventory instance for each player
         );
 
-        this.put(uuid, inventoryMap);
+        this.putAll(uuid, inventoryMap);
 
     }
 
@@ -68,10 +68,10 @@ public class SetupMap extends InventoryMap {
                     System.currentTimeMillis()
             );
 
-            return this.get(playerUUID).get(inventoryId);
+            return this.getCachedInventories(playerUUID).get(inventoryId);
         }
 
-        CustomInventory customInventory = this.get(playerUUID).get(inventoryId);
+        CustomInventory customInventory = this.getCachedInventories(playerUUID).get(inventoryId);
         long lastAccess = this.lastAccessMap.get(playerUUID).getOrDefault(inventoryId, -1L);
 
         boolean expired = System.currentTimeMillis() - lastAccess > EXPIRATION_TIME;
@@ -113,7 +113,7 @@ public class SetupMap extends InventoryMap {
 
 
     public boolean containsInventory(UUID playerUUID, String arg) {
-        return this.get(playerUUID).containsKey(arg);
+        return this.getCachedInventories(playerUUID).containsKey(arg);
     }
 
     public void clearInventoryMap() {

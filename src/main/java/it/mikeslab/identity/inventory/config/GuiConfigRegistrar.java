@@ -262,7 +262,7 @@ public class GuiConfigRegistrar {
      */
     public Optional<String> fromCustomGuiId(int id, UUID uuid) {
 
-        for(Map.Entry<String, CustomInventory> entry : playerInventories.get(uuid).entrySet()) {
+        for(Map.Entry<String, CustomInventory> entry : playerInventories.getCachedInventories(uuid).entrySet()) {
 
             if(entry.getValue().getId() == id) {
                 return Optional.of(entry.getKey());

@@ -4,7 +4,6 @@ import it.mikeslab.commons.api.component.ComponentsUtil;
 import it.mikeslab.commons.api.inventory.util.config.FileUtil;
 import it.mikeslab.commons.api.logger.LogUtils;
 import it.mikeslab.commons.api.various.message.MessageHelperImpl;
-import it.mikeslab.commons.api.various.util.XPotion;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.config.ConfigKey;
 import it.mikeslab.identity.config.lang.LanguageKey;
@@ -128,7 +127,7 @@ public class PresetsManager {
         settingSection.set("extract-defaults", false);
 
         this.saveConfig(
-                instance.getCustomConfig().getFile(),
+                instance.getCustomConfig().buildFile(),
                 instance.getCustomConfig().getConfiguration()
         );
 
