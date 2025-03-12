@@ -74,7 +74,7 @@ public class IdentityCommand extends BaseCommand {
         Identity filterIdentity = new Identity(); // this format nulls values
                                                   // and prevents its empty content
                                                   // from being queries inside the database
-        filterIdentity.setUuid(targetUUID);
+        filterIdentity.setUniqueId(targetUUID);
 
         Component resetMessage = instance.getLanguage().getComponent(
                 LanguageKey.IDENTITY_RESET_FOR,
