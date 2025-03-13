@@ -1,6 +1,6 @@
 package it.mikeslab.identity.event.auth;
 
-import fr.xephi.authme.events.LoginEvent;
+import com.nickuc.login.api.event.bukkit.auth.AuthenticateEvent;
 import it.mikeslab.identity.IdentityPlugin;
 import it.mikeslab.identity.helper.AuthHelper;
 import lombok.RequiredArgsConstructor;
@@ -8,16 +8,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 @RequiredArgsConstructor
-public class AuthMeListener implements Listener {
+public class NLoginListener implements Listener {
 
     private final IdentityPlugin instance;
 
     /**
-     * AuthMeReloaded auth handling
-     * @param event AuthMeReloaded auth proprietary event
+     * nLogin auth handling
+     * @param event nLogin auth proprietary event
      */
     @EventHandler
-    public void onAuth(LoginEvent event) {
+    public void onLogin(AuthenticateEvent event) {
         new AuthHelper(instance).postAuth(event.getPlayer());
     }
 
