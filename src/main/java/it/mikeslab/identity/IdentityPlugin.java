@@ -27,6 +27,7 @@ import it.mikeslab.identity.event.GuiCloseListener;
 import it.mikeslab.identity.event.GuiOpenEvent;
 import it.mikeslab.identity.event.PlayerListener;
 import it.mikeslab.identity.event.auth.AuthMeListener;
+import it.mikeslab.identity.event.auth.NLoginListener;
 import it.mikeslab.identity.handler.AntiSpam;
 import it.mikeslab.identity.handler.AntiSpamImpl;
 import it.mikeslab.identity.handler.IdentityCacheHandler;
@@ -45,6 +46,7 @@ import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -280,17 +282,7 @@ public final class IdentityPlugin extends JavaPlugin {
                 this
         );
 
-        if(hasAuthMeReloaded()) {
-            LogUtils.info(
-                    LogUtils.LogSource.PLUGIN,
-                    "AuthMeReloaded detected, hooking into it. If you want to enable the " +
-                            "setup after authentication, set the config option 'settings.setup-after-auth' to true."
-            );
-            this.getServer().getPluginManager().registerEvents(
-                    new AuthMeListener(this),
-                    this
-            );
-        }
+        this.handleAuthSystems();
 
         // GuiListener
         this.getServer().getPluginManager().registerEvents(
@@ -440,6 +432,60 @@ public final class IdentityPlugin extends JavaPlugin {
      */
     private boolean hasAuthMeReloaded() {
         return Bukkit.getPluginManager().isPluginEnabled("AuthMe");
+    }
+
+    /**
+     * Checks if nLogin is enabled
+     * @return true if nLogin is enabled
+     */
+    private boolean hasNLoginEnabled() {
+        return Bukkit.getPluginManager().isPluginEnabled("nLogin");
+    }
+
+    /**
+     * Handles the optional authentication systems
+     * @return
+     */
+    private void handleAuthSystems() {
+
+        String authenticator = null;
+        Listener listener = null;
+
+        if(hasAuthMeReloaded()) {
+            authenticator = "AuthMe";
+            listener = new AuthMeListener(this);
+        }
+
+        if(hasNLoginEnabled() && listener == null) {
+            authenticator = "nLogin";
+            listener = new NLoginListener(this);
+        }
+
+        // if any of the handled auth system has been enabled, activates it
+        if(listener != null) {
+
+            if(customConfig.getBoolean(ConfigKey.SETUP_AFTER_AUTH)) {
+
+                LogUtils.info(
+                        LogUtils.LogSource.PLUGIN,
+                        String.format("%s detected. Auth handling is enabled, hooking into it.", authenticator)
+                );
+
+                Bukkit.getPluginManager().registerEvents(
+                        listener,
+                        this);
+
+                return;
+            }
+
+            LogUtils.warn(
+                    LogUtils.LogSource.PLUGIN,
+                    String.format("%s detected. If you want to enable the " +
+                                    "setup after authentication, set the config option 'settings.setup-after-auth' to true.",
+                            authenticator)
+            );
+
+        }
     }
 
 

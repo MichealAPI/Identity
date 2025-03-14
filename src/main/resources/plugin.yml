@@ -5,6 +5,7 @@ api-version: '1.16'
 depend: [PlaceholderAPI, LabCommons]
 softdepend:
   - AuthMe
+  - nLogin
 
 author: MikesLab
 description: 'A simple plug-in to fully customize your players identity.'
